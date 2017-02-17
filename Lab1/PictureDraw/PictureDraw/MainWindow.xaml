@@ -1,0 +1,18 @@
+﻿<Window x:Class="PictureDraw.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PictureDraw"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="800">
+    <Grid x:Name="mainGrid">
+        <Rectangle Fill="#FFF3F3F3" HorizontalAlignment="Left" Height="570" VerticalAlignment="Top" Width="133"/>
+        <Button x:Name="buttonRectangle" Content="Rectangle" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="112" Foreground="Black" BorderBrush="{x:Null}" Click="buttonRectangle_Click"/>
+        <Button x:Name="buttonCircle" Content="Circle" HorizontalAlignment="Left" Margin="10,34,0,0" VerticalAlignment="Top" Width="112" Foreground="Black" BorderBrush="{x:Null}"/>
+        <Button x:Name="buttonTriangle" Content="Triangle" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Width="112" Foreground="Black" BorderBrush="{x:Null}"/>
+        <Button x:Name="buttonLine" Content="Line" HorizontalAlignment="Left" Margin="10,81,0,0" VerticalAlignment="Top" Width="112" Foreground="Black" BorderBrush="{x:Null}"/>
+        <Button x:Name="buttonSquare" Content="Square" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Width="112" Foreground="Black" BorderBrush="{x:Null}"/>
+        <Button x:Name="buttonTrapeze" Content="Trapeze" HorizontalAlignment="Left" Margin="10,129,0,0" VerticalAlignment="Top" Width="112" Foreground="Black" BorderBrush="{x:Null}"/>
+    </Grid>
+</Window>
