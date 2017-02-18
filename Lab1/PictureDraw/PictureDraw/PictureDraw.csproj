@@ -55,8 +55,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Rectangle.cs" />
-    <Compile Include="Shape.cs" />
+    <Compile Include="Circles.cs" />
+    <Compile Include="GlobalProperties.cs" />
+    <Compile Include="Lines.cs" />
+    <Compile Include="Rectangles.cs" />
+    <Compile Include="Shapes.cs" />
+    <Compile Include="Squares.cs" />
+    <Compile Include="Tetragons.cs" />
+    <Compile Include="Triangles.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
