@@ -13,13 +13,10 @@ namespace PictureDraw
     {
         private int Size { get; set; }
 
-        public Squares(int Size, string Name, 
-            SolidColorBrush ColorFill, SolidColorBrush ColorStroke, 
-            Canvas mainCanvas, int CanvasOffsetX, int CanvasOffsetY) : base(
-                Name, ColorFill, ColorStroke, mainCanvas,
-                CanvasOffsetX, CanvasOffsetY)
+        public Squares(string Name, Canvas mainCanvas) : base(
+                Name, mainCanvas)
         {
-            this.Size = Size;
+                        
         }
 
         public override void Draw()
@@ -32,6 +29,23 @@ namespace PictureDraw
             mainCanvas.Children.Add(square);
             Canvas.SetTop(square, CanvasOffsetY);
             Canvas.SetLeft(square, CanvasOffsetX);
+        }
+
+        public override void SetColors(SolidColorBrush Fill, SolidColorBrush Stroke)
+        {
+            ColorFill = Fill;
+            ColorStroke = Stroke;
+        }
+
+        public override void SetCanvasOffset(int CanvasOffsetX, int CanvasOffsetY)
+        {
+            this.CanvasOffsetX = CanvasOffsetX;
+            this.CanvasOffsetY = CanvasOffsetY;
+        }
+
+        public void SetSize(int Size)
+        {
+            this.Size = Size;
         }
     }
 }

@@ -14,11 +14,8 @@ namespace PictureDraw
     {
         private int Radius { get; set; }
 
-        public Circles(int Radius, string Name,
-            SolidColorBrush ColorFill, SolidColorBrush ColorStroke,
-            Canvas mainCanvas, int CanvasOffsetX, int CanvaseOffsetY) : base(
-                Name, ColorFill, ColorStroke, mainCanvas,
-                CanvasOffsetX, CanvaseOffsetY)
+        public Circles(int Radius, string Name, Canvas mainCanvas) : base(
+                Name, mainCanvas)
         {
             this.Radius = Radius;
         }
@@ -33,6 +30,18 @@ namespace PictureDraw
             mainCanvas.Children.Add(circle);            
             Canvas.SetTop(circle, CanvasOffsetY);
             Canvas.SetLeft(circle, CanvasOffsetX);
+        }
+
+        public override void SetColors(SolidColorBrush Fill, SolidColorBrush Stroke)
+        {
+            ColorFill = Fill;
+            ColorStroke = Stroke;
+        }
+
+        public override void SetCanvasOffset(int CanvasOffsetX, int CanvasOffsetY)
+        {
+            this.CanvasOffsetX = CanvasOffsetX;
+            this.CanvasOffsetY = CanvasOffsetY;
         }
     }
 }

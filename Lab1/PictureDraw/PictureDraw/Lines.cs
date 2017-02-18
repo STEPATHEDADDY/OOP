@@ -16,17 +16,10 @@ namespace PictureDraw
         private int X2 { get; set; }
         private int Y2 { get; set; }
 
-        public Lines(int X1, int Y1, int X2, int Y2,
-            string Name, SolidColorBrush ColorFill,
-            SolidColorBrush ColorStroke, Canvas mainCanvas,
-            int CanvasOffsetX, int CanvasOffsetY) : base(
-                Name, ColorFill, ColorStroke, mainCanvas,
-                CanvasOffsetX, CanvasOffsetY)
+        public Lines(string Name, Canvas mainCanvas) : base(
+            Name, mainCanvas)
         {
-            this.X1 = X1;
-            this.Y1 = Y1;
-            this.X2 = X2;
-            this.Y2 = Y2;
+            
         }
 
         public override void Draw()
@@ -40,6 +33,26 @@ namespace PictureDraw
             mainCanvas.Children.Add(line);
             Canvas.SetTop(line, CanvasOffsetY);
             Canvas.SetLeft(line, CanvasOffsetX);
+        }
+
+        public override void SetColors(SolidColorBrush Fill, SolidColorBrush Stroke)
+        {
+            ColorFill = Fill;
+            ColorStroke = Stroke;
+        }
+
+        public override void SetCanvasOffset(int CanvasOffsetX, int CanvasOffsetY)
+        {
+            this.CanvasOffsetX = CanvasOffsetX;
+            this.CanvasOffsetY = CanvasOffsetY;
+        }
+
+        public void SetPoints(int X1, int Y1, int X2, int Y2)
+        {
+            this.X1 = X1;
+            this.Y1 = Y1;
+            this.X2 = X2;
+            this.Y2 = Y2;
         }
     }
 }

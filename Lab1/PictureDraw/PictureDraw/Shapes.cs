@@ -10,26 +10,21 @@ namespace PictureDraw
 {
     abstract class Shapes
     {
-        public string Name { get; set; }
-        public SolidColorBrush ColorFill { get; set; }        
-        public SolidColorBrush ColorStroke { get; set; }  
-        public int CanvasOffsetX { get; set; } 
-        public int CanvasOffsetY { get; set; } 
-        public Canvas mainCanvas { get; set; }
+        protected string Name { get; set; }
+        protected SolidColorBrush ColorFill { get; set; }        
+        protected SolidColorBrush ColorStroke { get; set; }  
+        protected int CanvasOffsetX { get; set; } 
+        protected int CanvasOffsetY { get; set; } 
+        protected Canvas mainCanvas { get; set; }
 
-        public Shapes(string Name, SolidColorBrush ColorFill, SolidColorBrush ColorStroke, Canvas mainCanvas,
-            int CanvasOffsetX, int CanvasOffsetY)
+        public Shapes(string Name, Canvas mainCanvas)
         {
-
-            this.Name = Name;
-            this.ColorFill = ColorFill;
-            this.ColorStroke = ColorStroke;
-            this.mainCanvas = mainCanvas;
-            this.CanvasOffsetX = CanvasOffsetX;
-            this.CanvasOffsetY = CanvasOffsetY;
-
+            this.Name = Name;            
+            this.mainCanvas = mainCanvas;            
         }
 
         public abstract void Draw();
+        public abstract void SetColors(SolidColorBrush Fill, SolidColorBrush Stroke);
+        public abstract void SetCanvasOffset(int CanvasOffsetX, int CanvasOffsetY);              
     }
 }

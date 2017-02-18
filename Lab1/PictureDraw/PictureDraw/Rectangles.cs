@@ -14,14 +14,10 @@ namespace PictureDraw
         private int Width { get; set; }
         private int Height { get; set; }
 
-        public Rectangles(int Width, int Height, string Name, 
-            SolidColorBrush ColorFill, SolidColorBrush ColorStroke, Canvas mainCanvas, 
-            int CanvasOffsetX, int CanvasOffsetY) : base(
-                Name, ColorFill, ColorStroke, mainCanvas, 
-                CanvasOffsetX, CanvasOffsetY)
+        public Rectangles(string Name, Canvas mainCanvas) : base(
+                Name, mainCanvas)
         {
-            this.Width = Width;
-            this.Height = Height;
+
         }
 
         public override void Draw()
@@ -35,5 +31,23 @@ namespace PictureDraw
             Canvas.SetTop(rect, CanvasOffsetY);
             Canvas.SetLeft(rect, CanvasOffsetX);
         }
+
+        public override void SetColors(SolidColorBrush Fill, SolidColorBrush Stroke)
+        {
+            ColorFill = Fill;
+            ColorStroke = Stroke;
+        }
+
+        public override void SetCanvasOffset(int CanvasOffsetX, int CanvasOffsetY)
+        {
+            this.CanvasOffsetX = CanvasOffsetX;
+            this.CanvasOffsetY = CanvasOffsetY;
+        }
+
+        public void SetSize(int Width, int Height)
+        {
+            this.Width = Width;
+            this.Height = Height;
+        }        
     }
 }

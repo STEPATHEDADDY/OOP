@@ -34,11 +34,11 @@ namespace PictureDraw
         private void buttonRectangle_Click(object sender, RoutedEventArgs e)
         {
             RandomPositionX = _rand.Next(100, 800);            
-            RandomPositionY = _rand.Next(100, 400);            
-            var rectangle = new Rectangles(
-                100, 200, "MyRect", GlobalProperties.ColorFill, GlobalProperties.ColorStroke, 
-                mainCanvas, RandomPositionX, RandomPositionY
-            );
+            RandomPositionY = _rand.Next(100, 400);
+            var rectangle = new Rectangles("MyRect", mainCanvas);
+            rectangle.SetCanvasOffset(RandomPositionX, RandomPositionY);
+            rectangle.SetColors(GlobalProperties.ColorFill, GlobalProperties.ColorStroke);
+            rectangle.SetSize(100, 200);
             rectangle.Draw();
             ListShapes.Add(rectangle);
         }
@@ -47,22 +47,21 @@ namespace PictureDraw
         {
             RandomPositionX = _rand.Next(100, 800);
             RandomPositionY = _rand.Next(100, 400);
-            var circle = new Circles(
-                30, "MyCircle", GlobalProperties.ColorFill, GlobalProperties.ColorStroke,
-                mainCanvas, RandomPositionX, RandomPositionY
-            );
-            circle.Draw();
+            var circle = new Circles(40, "MyCircle", mainCanvas);
+            circle.SetCanvasOffset(RandomPositionX, RandomPositionY);
+            circle.SetColors(GlobalProperties.ColorFill, GlobalProperties.ColorStroke);
+            circle.Draw();            
             ListShapes.Add(circle);
         }
 
         private void buttonTriangle_Click(object sender, RoutedEventArgs e)
         {
             RandomPositionX = _rand.Next(100, 800);
-            RandomPositionY = _rand.Next(100, 400);
-            var triangle = new Triangles(
-                10, 20, 40, 20, 25, 60, "MyTriangle", GlobalProperties.ColorFill, GlobalProperties.ColorStroke,
-                mainCanvas, RandomPositionX, RandomPositionY
-            );
+            RandomPositionY = _rand.Next(100, 400);            
+            var triangle = new Triangles("MyTriangle", mainCanvas);
+            triangle.SetCanvasOffset(RandomPositionX, RandomPositionY);
+            triangle.SetColors(GlobalProperties.ColorFill, GlobalProperties.ColorStroke);
+            triangle.SetPoints(10, 20, 40, 20, 25, 60);            
             triangle.Draw();
             ListShapes.Add(triangle);
         }
@@ -70,11 +69,11 @@ namespace PictureDraw
         private void buttonLine_Click(object sender, RoutedEventArgs e)
         {
             RandomPositionX = _rand.Next(100, 800);
-            RandomPositionY = _rand.Next(100, 400);
-            var line = new Lines(
-                10, 20, 30, 40, "MyLine", GlobalProperties.ColorFill, GlobalProperties.ColorStroke,
-                mainCanvas, RandomPositionX, RandomPositionY
-            );
+            RandomPositionY = _rand.Next(100, 400);            
+            var line = new Lines("MyLine", mainCanvas);
+            line.SetCanvasOffset(RandomPositionX, RandomPositionY);
+            line.SetColors(GlobalProperties.ColorFill, GlobalProperties.ColorStroke);
+            line.SetPoints(10, 20, 30, 40);
             line.Draw();
             ListShapes.Add(line);
         }
@@ -83,11 +82,11 @@ namespace PictureDraw
         {
             RandomPositionX = _rand.Next(100, 800);
             RandomPositionY = _rand.Next(100, 400);
-            var size = _rand.Next(100, 200);
-            var square = new Squares(
-                size, "MySquare", GlobalProperties.ColorFill, GlobalProperties.ColorStroke,
-                mainCanvas, RandomPositionX, RandomPositionY
-            );            
+            var size = _rand.Next(100, 200);                    
+            var square = new Squares("MySquare", mainCanvas);
+            square.SetCanvasOffset(RandomPositionX, RandomPositionY);
+            square.SetColors(GlobalProperties.ColorFill, GlobalProperties.ColorStroke);
+            square.SetSize(100);
             square.Draw();
             ListShapes.Add(square);
         }
@@ -95,11 +94,11 @@ namespace PictureDraw
         private void buttonTetragon_Click(object sender, RoutedEventArgs e)
         {
             RandomPositionX = _rand.Next(100, 800);
-            RandomPositionY = _rand.Next(100, 400);
-            var tetragon = new Tetragons(
-                10, 10, 40, 10, 80, 60, 10, 60, "MyTrapezes", GlobalProperties.ColorFill, GlobalProperties.ColorStroke,
-                mainCanvas, RandomPositionX, RandomPositionY
-            );
+            RandomPositionY = _rand.Next(100, 400);            
+            var tetragon = new Tetragons("MyTetra", mainCanvas);
+            tetragon.SetCanvasOffset(RandomPositionX, RandomPositionY);
+            tetragon.SetColors(GlobalProperties.ColorFill, GlobalProperties.ColorStroke);
+            tetragon.SetPoints(10, 10, 40, 10, 80, 60, 10, 60);
             tetragon.Draw();
             ListShapes.Add(tetragon);
         }
