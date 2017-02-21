@@ -9,19 +9,22 @@
     <Grid>
         <Rectangle Fill="#FF0B0029" HorizontalAlignment="Left" Height="770" VerticalAlignment="Top" Width="133"/>
         <Rectangle Fill="#FF0B0029" HorizontalAlignment="Left" Height="79" VerticalAlignment="Top" Width="1076" Margin="118,691,-0.4,0" RenderTransformOrigin="0.5,0.5"/>
-        <Button x:Name="buttonRectangle" Content="Rectangle" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonRectangle_Click" Background="#FF0A0025"/>
-        <Button x:Name="buttonCircle" Content="Circle" HorizontalAlignment="Left" Margin="10,34,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonCircle_Click" Background="#FF0A0025"/>
-        <Button x:Name="buttonTriangle" Content="Triangle" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonTriangle_Click" Background="#FF0B0029"/>
-        <Button x:Name="buttonLine" Content="Line" HorizontalAlignment="Left" Margin="10,81,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonLine_Click" Background="#FF0B0029"/>
-        <Button x:Name="buttonSquare" Content="Square" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonSquare_Click" Background="#FF0B0029"/>
-        <Button x:Name="buttonTetragon" Content="Tetragon" HorizontalAlignment="Left" Margin="10,129,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonTetragon_Click" Background="#FF0B0029"/>
-        <Canvas x:Name="mainCanvas" Margin="133,0,-0.4,79.4">
-            <Rectangle x:Name="colorRed" Fill="Red" Height="22" Canvas.Left="5" Canvas.Top="700" Width="22" Stroke="White" MouseDown="color_MouseDown"/>
-            <Rectangle x:Name="colorBlue" Fill="#FF00A8FF" Height="22" Canvas.Left="32" Canvas.Top="700" Width="22" Stroke="White" MouseDown="color_MouseDown"/>
-            <Rectangle x:Name="colorYellow" Fill="#FFFFD300" Height="22" Canvas.Left="5" Canvas.Top="727" Width="22" Stroke="White" MouseDown="color_MouseDown"/>
-            <Rectangle x:Name="colorAqua" Fill="#FF00FFCD" Height="22" Canvas.Left="32" Canvas.Top="727" Width="22" Stroke="White" MouseDown="color_MouseDown"/>
-            <Rectangle x:Name="colorBlack" Fill="Black" Height="22" Canvas.Left="59" Canvas.Top="700" Width="22" Stroke="White" MouseDown="color_MouseDown"/>
-            <Rectangle x:Name="colorPurple" Fill="#FF8800FF" Height="22" Canvas.Left="59" Canvas.Top="727" Width="22" Stroke="White" MouseDown="color_MouseDown"/>
+        <Button x:Name="buttonRectangle" Content="Rectangle" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0A0025"/>
+        <Button x:Name="buttonCircle" Content="Circle" HorizontalAlignment="Left" Margin="10,34,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0A0025"/>
+        <Button x:Name="buttonTriangle" Content="Triangle" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0B0029"/>
+        <Button x:Name="buttonLine" Content="Line" HorizontalAlignment="Left" Margin="10,81,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0B0029"/>
+        <Button x:Name="buttonSquare" Content="Square" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0B0029"/>
+        <Button x:Name="buttonTetragon" Content="Tetragon" HorizontalAlignment="Left" Margin="10,129,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0B0029"/>
+        <Canvas x:Name="mainCanvas" Margin="133,0,-0.4,79.4" MouseDown="mainCanvas_MouseDown" MouseUp="mainCanvas_MouseUp">
+            <Rectangle x:Name="rectMainCanvas" Fill="White" Height="691" Width="1061" Stroke="White"/>
+        </Canvas>
+        <Canvas x:Name="canvasColors" Margin="133,696,765.6,5.4">
+            <Rectangle x:Name="colorRed" Fill="Red" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Top="6"/>
+            <Rectangle x:Name="colorBlue" Fill="#FF00A8FF" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Left="55" Canvas.Top="7"/>
+            <Rectangle x:Name="colorYellow" Fill="#FFFFD300" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Left="55" Canvas.Top="37"/>
+            <Rectangle x:Name="colorAqua" Fill="#FF00FFCD" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Top="7" Canvas.Left="28"/>
+            <Rectangle x:Name="colorBlack" Fill="Black" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Left="28" Canvas.Top="37"/>
+            <Rectangle x:Name="colorPurple" Fill="#FF8800FF" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Top="37"/>
         </Canvas>
     </Grid>
 </Window>

@@ -14,40 +14,32 @@ namespace PictureDraw
         private int Width { get; set; }
         private int Height { get; set; }
 
-        public Rectangles(string Name, Canvas mainCanvas) : base(
-                Name, mainCanvas)
+        public override void SetInitProperties(
+            string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY)
         {
-
+            //finish not initialize
+            ColorFill = GlobalProperties.ColorFill;
+            ColorStroke = GlobalProperties.ColorStroke;
+            this.startX = startX < finishX ? startX : finishX;
+            this.startY = startY < finishY ? startY : finishY;
+            this.Name = Name;
+            this.MainCanvas = MainCanvas;
+            Width = Math.Abs(startX - finishX);
+            Height = Math.Abs(startY - finishY);
         }
 
         public override void Draw()
         {
             Rectangle rect = new Rectangle();
-            rect.Width = Width;
-            rect.Height = Height;            
+            rect.StrokeThickness = 2;
             rect.Stroke = ColorStroke;
             rect.Fill = ColorFill;
-            mainCanvas.Children.Add(rect);
-            Canvas.SetTop(rect, CanvasOffsetY);
-            Canvas.SetLeft(rect, CanvasOffsetX);
-        }
-
-        public override void SetColors(SolidColorBrush Fill, SolidColorBrush Stroke)
-        {
-            ColorFill = Fill;
-            ColorStroke = Stroke;
-        }
-
-        public override void SetCanvasOffset(int CanvasOffsetX, int CanvasOffsetY)
-        {
-            this.CanvasOffsetX = CanvasOffsetX;
-            this.CanvasOffsetY = CanvasOffsetY;
-        }
-
-        public void SetSize(int Width, int Height)
-        {
-            this.Width = Width;
-            this.Height = Height;
-        }        
+            rect.Width = Width;
+            rect.Height = Height;            
+            MainCanvas.Children.Add(rect);
+            Canvas.SetLeft(rect, startX);
+            Canvas.SetTop(rect, startY);
+        }      
     }
 }

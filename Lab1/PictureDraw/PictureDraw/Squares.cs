@@ -11,41 +11,32 @@ namespace PictureDraw
 {
     class Squares : Shapes
     {
-        private int Size { get; set; }
 
-        public Squares(string Name, Canvas mainCanvas) : base(
-                Name, mainCanvas)
+        public override void SetInitProperties(
+            string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY)
         {
-                        
+            //finish not initialize
+            ColorFill = GlobalProperties.ColorFill;
+            ColorStroke = GlobalProperties.ColorStroke;
+            this.startX = startX < finishX ? startX : finishX;
+            this.startY = startY < finishY ? startY : finishY;
+            this.Name = Name;
+            this.MainCanvas = MainCanvas;
+            Width = Math.Abs(startX - finishX);
+            Height = Math.Abs(startY - finishY);
+            Width = Height = Width < Height ? Width : Height;
         }
 
         public override void Draw()
         {
             var square = new Rectangle();
-            square.Width = Size;
-            square.Height = Size;
             square.Stroke = ColorStroke;
             square.Fill = ColorFill;
-            mainCanvas.Children.Add(square);
-            Canvas.SetTop(square, CanvasOffsetY);
-            Canvas.SetLeft(square, CanvasOffsetX);
-        }
-
-        public override void SetColors(SolidColorBrush Fill, SolidColorBrush Stroke)
-        {
-            ColorFill = Fill;
-            ColorStroke = Stroke;
-        }
-
-        public override void SetCanvasOffset(int CanvasOffsetX, int CanvasOffsetY)
-        {
-            this.CanvasOffsetX = CanvasOffsetX;
-            this.CanvasOffsetY = CanvasOffsetY;
-        }
-
-        public void SetSize(int Size)
-        {
-            this.Size = Size;
+            square.Width = square.Height = Width;            
+            MainCanvas.Children.Add(square);
+            Canvas.SetLeft(square, startX);
+            Canvas.SetTop(square, startY);
         }
     }
 }

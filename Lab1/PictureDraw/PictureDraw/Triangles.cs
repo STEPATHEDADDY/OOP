@@ -19,10 +19,25 @@ namespace PictureDraw
         private int X3 { get; set; }
         private int Y3 { get; set; }
 
-        public Triangles(string Name, Canvas mainCanvas) : base(
-                Name, mainCanvas)
-        { 
-
+        public override void SetInitProperties(
+            string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY)
+        {
+            //finish not initialize
+            ColorFill = GlobalProperties.ColorFill;
+            ColorStroke = GlobalProperties.ColorStroke;
+            this.startX = startX < finishX ? startX : finishX;
+            this.startY = startY < finishY ? startY : finishY;
+            this.Name = Name;
+            this.MainCanvas = MainCanvas;
+            Width = Math.Abs(startX - finishX);
+            Height = Math.Abs(startY - finishY);
+            X1 = 0;
+            Y1 = Height;
+            X2 = Width/2;
+            Y2 = 0;
+            X3 = Width;
+            Y3 = Height;
         }
 
         public override void Draw()
@@ -31,25 +46,11 @@ namespace PictureDraw
             triangle.StrokeThickness = 2;
             triangle.Stroke = ColorStroke;
             triangle.Fill = ColorFill;
-            triangle.HorizontalAlignment = HorizontalAlignment.Left;
-            triangle.VerticalAlignment = VerticalAlignment.Center;
             var pointCollection = GetPointCollection();
             triangle.Points = pointCollection;            
-            mainCanvas.Children.Add(triangle);
-            Canvas.SetTop(triangle, CanvasOffsetY);
-            Canvas.SetLeft(triangle, CanvasOffsetX);
-        }
-
-        public override void SetCanvasOffset(int CanvasOffsetX, int CanvasOffsetY)
-        {
-            this.CanvasOffsetX = CanvasOffsetX;
-            this.CanvasOffsetY = CanvasOffsetY;
-        }
-
-        public override void SetColors(SolidColorBrush Fill, SolidColorBrush Stroke)
-        {
-            ColorFill = Fill;
-            ColorStroke = Stroke;
+            MainCanvas.Children.Add(triangle);
+            Canvas.SetLeft(triangle, startX);
+            Canvas.SetTop(triangle, startY);
         }
 
         private PointCollection GetPointCollection()
@@ -62,17 +63,6 @@ namespace PictureDraw
             pointCollection.Add(point2);
             pointCollection.Add(point3);            
             return pointCollection;
-        }
-
-        public void SetPoints(int X1, int Y1, int X2, int Y2,
-            int X3, int Y3)
-        {
-            this.X1 = X1;
-            this.Y1 = Y1;
-            this.X2 = X2;
-            this.Y2 = Y2;
-            this.X3 = X3;
-            this.Y3 = Y3;            
         }
     }
 }

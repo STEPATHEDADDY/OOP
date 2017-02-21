@@ -21,10 +21,27 @@ namespace PictureDraw
         private int X4 { get; set; }
         private int Y4 { get; set; }
 
-        public Tetragons(string Name, Canvas mainCanvas) : base(
-                Name, mainCanvas)                
+        public override void SetInitProperties(
+            string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY)
         {
-            
+            //finish not initialize
+            ColorFill = GlobalProperties.ColorFill;
+            ColorStroke = GlobalProperties.ColorStroke;
+            this.startX = startX < finishX ? startX : finishX;
+            this.startY = startY < finishY ? startY : finishY;
+            this.Name = Name;
+            this.MainCanvas = MainCanvas;
+            Width = Math.Abs(startX - finishX);
+            Height = Math.Abs(startY - finishY);
+            X1 = 0;
+            Y1 = Height;
+            X2 = Width / 3;
+            Y2 = 0;
+            X3 = 2 * X2;
+            Y3 = 0;
+            X4 = Width;
+            Y4 = Height;
         }
 
         public override void Draw()
@@ -33,25 +50,11 @@ namespace PictureDraw
             tetragon.StrokeThickness = 2;
             tetragon.Stroke = ColorStroke;
             tetragon.Fill = ColorFill;
-            tetragon.HorizontalAlignment = HorizontalAlignment.Left;
-            tetragon.VerticalAlignment = VerticalAlignment.Center;
             var pointCollection = GetPointCollection();
             tetragon.Points = pointCollection;            
-            mainCanvas.Children.Add(tetragon);
-            Canvas.SetTop(tetragon, CanvasOffsetY);
-            Canvas.SetLeft(tetragon, CanvasOffsetX);
-        }
-
-        public override void SetCanvasOffset(int CanvasOffsetX, int CanvasOffsetY)
-        {
-            this.CanvasOffsetX = CanvasOffsetX;
-            this.CanvasOffsetY = CanvasOffsetY;
-        }
-
-        public override void SetColors(SolidColorBrush Fill, SolidColorBrush Stroke)
-        {
-            ColorFill = Fill;
-            ColorStroke = Stroke;
+            MainCanvas.Children.Add(tetragon);
+            Canvas.SetLeft(tetragon, startX);
+            Canvas.SetTop(tetragon, startY);
         }
 
         private PointCollection GetPointCollection()
@@ -66,19 +69,6 @@ namespace PictureDraw
             pointCollection.Add(point3);
             pointCollection.Add(point4);
             return pointCollection;
-        }
-
-        public void SetPoints(int X1, int Y1, int X2, int Y2,
-            int X3, int Y3, int X4, int Y4)
-        {
-            this.X1 = X1;
-            this.Y1 = Y1;
-            this.X2 = X2;
-            this.Y2 = Y2;
-            this.X3 = X3;
-            this.Y3 = Y3;
-            this.X4 = X4;
-            this.Y4 = Y4;
         }
     }
 }

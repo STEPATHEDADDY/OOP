@@ -12,36 +12,34 @@ namespace PictureDraw
 {
     class Circles : Shapes
     {
-        private int Radius { get; set; }
+        private int Radius { get; set; }        
 
-        public Circles(int Radius, string Name, Canvas mainCanvas) : base(
-                Name, mainCanvas)
+        public override void SetInitProperties(
+            string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY)
         {
-            this.Radius = Radius;
+            //finish not initialize
+            ColorFill = GlobalProperties.ColorFill;
+            ColorStroke = GlobalProperties.ColorStroke;
+            this.startX = startX < finishX ? startX : finishX;
+            this.startY = startY < finishY ? startY : finishY;            
+            this.Name = Name;
+            this.MainCanvas = MainCanvas;
+            this.Width = Math.Abs(startX - finishX);
+            this.Height = Math.Abs(startY - finishY);
+            Radius = Width < Height ? Width / 2 : Height / 2;
         }
 
         public override void Draw()
         {
             Ellipse circle = new Ellipse();
-            circle.Width = Radius*2;
-            circle.Height = Radius*2;                       
             circle.Stroke = ColorStroke;
             circle.Fill = ColorFill;
-            mainCanvas.Children.Add(circle);            
-            Canvas.SetTop(circle, CanvasOffsetY);
-            Canvas.SetLeft(circle, CanvasOffsetX);
-        }
-
-        public override void SetColors(SolidColorBrush Fill, SolidColorBrush Stroke)
-        {
-            ColorFill = Fill;
-            ColorStroke = Stroke;
-        }
-
-        public override void SetCanvasOffset(int CanvasOffsetX, int CanvasOffsetY)
-        {
-            this.CanvasOffsetX = CanvasOffsetX;
-            this.CanvasOffsetY = CanvasOffsetY;
+            circle.Width = Radius*2;
+            circle.Height = Radius*2;                       
+            MainCanvas.Children.Add(circle);            
+            Canvas.SetLeft(circle, startX);
+            Canvas.SetTop(circle, startY);
         }
     }
 }
