@@ -12,23 +12,19 @@ namespace PictureDraw
 {
     class Circles : Shapes
     {
-        private int Radius { get; set; }        
+        private int Radius { get; set; }
 
-        public override void SetInitProperties(
-            string Name, Canvas MainCanvas,
-            int startX, int startY, int finishX, int finishY)
+        public Circles(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY): base(
+                Name, MainCanvas)
         {
-            //finish not initialize
-            ColorFill = GlobalProperties.ColorFill;
-            ColorStroke = GlobalProperties.ColorStroke;
-            this.startX = startX < finishX ? startX : finishX;
-            this.startY = startY < finishY ? startY : finishY;            
-            this.Name = Name;
-            this.MainCanvas = MainCanvas;
-            this.Width = Math.Abs(startX - finishX);
-            this.Height = Math.Abs(startY - finishY);
+            //finish not initialize 
+            this.startX = Math.Min(startX, finishX);
+            this.startY = Math.Min(startY, finishY);            
+            Width = Math.Abs(startX - finishX);
+            Height = Math.Abs(startY - finishY);
             Radius = Width < Height ? Width / 2 : Height / 2;
-        }
+        }            
 
         public override void Draw()
         {
@@ -40,6 +36,16 @@ namespace PictureDraw
             MainCanvas.Children.Add(circle);            
             Canvas.SetLeft(circle, startX);
             Canvas.SetTop(circle, startY);
+        }
+    }
+
+    class CircleCreator : ICreator
+    {
+        public Shapes FactoryMethod(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY)
+        {
+            return new Circles(Name, MainCanvas,
+                startX, startY, finishX, finishY);
         }
     }
 }

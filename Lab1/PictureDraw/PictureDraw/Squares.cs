@@ -11,18 +11,13 @@ namespace PictureDraw
 {
     class Squares : Shapes
     {
-
-        public override void SetInitProperties(
-            string Name, Canvas MainCanvas,
-            int startX, int startY, int finishX, int finishY)
+        public Squares(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY): base(
+                Name, MainCanvas)
         {
-            //finish not initialize
-            ColorFill = GlobalProperties.ColorFill;
-            ColorStroke = GlobalProperties.ColorStroke;
-            this.startX = startX < finishX ? startX : finishX;
-            this.startY = startY < finishY ? startY : finishY;
-            this.Name = Name;
-            this.MainCanvas = MainCanvas;
+            //finish not initialize 
+            this.startX = Math.Min(startX, finishX);
+            this.startY = Math.Min(startY, finishY);
             Width = Math.Abs(startX - finishX);
             Height = Math.Abs(startY - finishY);
             Width = Height = Width < Height ? Width : Height;
@@ -37,6 +32,15 @@ namespace PictureDraw
             MainCanvas.Children.Add(square);
             Canvas.SetLeft(square, startX);
             Canvas.SetTop(square, startY);
+        }
+    }
+
+    class SquareCreator : ICreator
+    {
+        public Shapes FactoryMethod(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY)
+        {
+            return new Squares(Name, MainCanvas, startX, startY, finishX, finishY);
         }
     }
 }

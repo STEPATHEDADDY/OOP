@@ -21,11 +21,20 @@ namespace PictureDraw
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public Shapes() {}
-
-        public abstract void SetInitProperties(
-            string Name, Canvas MainCanvas,
-            int startX, int startY, int finishX, int finishY);
+        public Shapes(string Name, Canvas MainCanvas)
+        {
+            ColorFill = GlobalProperties.ColorFill;
+            ColorStroke = GlobalProperties.ColorStroke;
+            this.Name = Name;
+            this.MainCanvas = MainCanvas;
+        }
+        
         public abstract void Draw();           
+    }
+
+    interface ICreator
+    {
+        Shapes FactoryMethod(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY);
     }
 }

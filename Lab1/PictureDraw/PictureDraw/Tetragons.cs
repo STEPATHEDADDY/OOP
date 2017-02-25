@@ -21,17 +21,13 @@ namespace PictureDraw
         private int X4 { get; set; }
         private int Y4 { get; set; }
 
-        public override void SetInitProperties(
-            string Name, Canvas MainCanvas,
-            int startX, int startY, int finishX, int finishY)
+        public Tetragons(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY): base(
+                Name, MainCanvas)
         {
-            //finish not initialize
-            ColorFill = GlobalProperties.ColorFill;
-            ColorStroke = GlobalProperties.ColorStroke;
-            this.startX = startX < finishX ? startX : finishX;
-            this.startY = startY < finishY ? startY : finishY;
-            this.Name = Name;
-            this.MainCanvas = MainCanvas;
+            //finish not initialize 
+            this.startX = Math.Min(startX, finishX);
+            this.startY = Math.Min(startY, finishY);
             Width = Math.Abs(startX - finishX);
             Height = Math.Abs(startY - finishY);
             X1 = 0;
@@ -69,6 +65,15 @@ namespace PictureDraw
             pointCollection.Add(point3);
             pointCollection.Add(point4);
             return pointCollection;
+        }
+    }
+
+    class TetragonCreator : ICreator
+    {
+        public  Shapes FactoryMethod(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY)
+        {
+            return new Tetragons(Name, MainCanvas, startX, startY, finishX, finishY);
         }
     }
 }

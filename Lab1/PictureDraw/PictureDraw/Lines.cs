@@ -11,18 +11,16 @@ namespace PictureDraw
 {
     class Lines : Shapes
     {
-        public override void SetInitProperties(
-            string Name, Canvas MainCanvas,
-            int startX, int startY, int finishX, int finishY)
+        public Lines(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY): base(
+                Name, MainCanvas)
         {
-            ColorFill = GlobalProperties.ColorFill;
-            ColorStroke = GlobalProperties.ColorStroke;
             this.startX = startX;
             this.startY = startY;
             this.finishX = finishX;
             this.finishY = finishY;
-            this.Name = Name;
-            this.MainCanvas = MainCanvas;
+            Width = Math.Abs(startX - finishX);
+            Height = Math.Abs(startY - finishY);            
         }
 
         public override void Draw()
@@ -35,6 +33,15 @@ namespace PictureDraw
             line.Stroke = ColorStroke;
             line.Fill = ColorFill;
             MainCanvas.Children.Add(line);
+        }
+    }
+
+    class LineCreator : ICreator
+    {
+        public Shapes FactoryMethod(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY)
+        {
+            return new Lines(Name, MainCanvas, startX, startY, finishX, finishY);
         }
     }
 }

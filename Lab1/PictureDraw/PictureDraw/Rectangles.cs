@@ -14,17 +14,13 @@ namespace PictureDraw
         private int Width { get; set; }
         private int Height { get; set; }
 
-        public override void SetInitProperties(
-            string Name, Canvas MainCanvas,
-            int startX, int startY, int finishX, int finishY)
+        public Rectangles(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY): base(
+                Name, MainCanvas)
         {
-            //finish not initialize
-            ColorFill = GlobalProperties.ColorFill;
-            ColorStroke = GlobalProperties.ColorStroke;
-            this.startX = startX < finishX ? startX : finishX;
-            this.startY = startY < finishY ? startY : finishY;
-            this.Name = Name;
-            this.MainCanvas = MainCanvas;
+            //finish not initialize 
+            this.startX = Math.Min(startX, finishX);
+            this.startY = Math.Min(startY, finishY);
             Width = Math.Abs(startX - finishX);
             Height = Math.Abs(startY - finishY);
         }
@@ -41,5 +37,14 @@ namespace PictureDraw
             Canvas.SetLeft(rect, startX);
             Canvas.SetTop(rect, startY);
         }      
+    }
+
+    class RectangleCreator : ICreator
+    {
+        public Shapes FactoryMethod(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY)
+        {
+            return new Rectangles(Name, MainCanvas, startX, startY, finishX, finishY);
+        }
     }
 }

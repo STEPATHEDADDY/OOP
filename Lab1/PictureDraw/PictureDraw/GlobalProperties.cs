@@ -13,5 +13,10 @@ namespace PictureDraw
         public static SolidColorBrush ColorFill { get; set; }
         public static SolidColorBrush ColorStroke { get; set; }
         public static int Thickness { get; set; }
+        public static int startX { get; set; }
+        public static int startY { get; set; }
+        public static int finishX { get; set; }
+        public static int finishY { get; set; }
+        public static ICreator currentShape { get; set; }
     }
 }

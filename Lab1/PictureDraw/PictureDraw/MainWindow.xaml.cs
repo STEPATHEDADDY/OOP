@@ -16,18 +16,23 @@ using System.Windows.Shapes;
 
 namespace PictureDraw
 {
+    //TODO Activator.CreateInstance(typeof (Circles), 10, 20, 30, 40);
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
         private ArrayList ListShapes = new ArrayList();
+        private Dictionary<string, ICreator> creators = new Dictionary<string, ICreator>
+            {
+                { "Circle", new CircleCreator() },
+                { "Line", new LineCreator() },
+                { "Rectangle", new RectangleCreator() },
+                { "Square", new SquareCreator() },
+                { "Tetragon", new TetragonCreator() },
+                { "Triangle", new TriangleCreator() },
+            };
         //private List<Shapes> ListShapes = new List<Shapes>();
-        private int startX { get; set; }
-        private int startY { get; set; }
-        private int finishX { get; set; }
-        private int finishY { get; set; }
-        private string currentShape { get; set; }
 
         public MainWindow()
         {
@@ -37,7 +42,7 @@ namespace PictureDraw
         private void buttonShape_Click(object sender, RoutedEventArgs e)
         {
             var button = (Button) sender;
-            currentShape = button.Content.ToString();
+            GlobalProperties.currentShape = creators[button.Content.ToString()];
         }
 
         private void color_MouseDown(object sender, MouseButtonEventArgs e)
@@ -56,27 +61,18 @@ namespace PictureDraw
         private void mainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var point = e.GetPosition(mainCanvas);
-            startX = (int) point.X;
-            startY = (int) point.Y;
+            GlobalProperties.startX = (int) point.X;
+            GlobalProperties.startY = (int) point.Y;
         }
 
         private void mainCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Dictionary<string, Shapes> shapeSelector = new Dictionary<string, Shapes>()
-            {
-                { "Circle", new Circles() },
-                { "Rectangle", new Rectangles() },
-                { "Square", new Squares() },
-                { "Line", new Lines() },
-                { "Triangle", new Triangles() },
-                { "Tetragon", new Tetragons() },
-            };
             var point = e.GetPosition(mainCanvas);
-            finishX = (int)point.X;
-            finishY = (int)point.Y;
-            Shapes shape = shapeSelector[currentShape];
-            shape.SetInitProperties($"My{currentShape}", mainCanvas,
-                startX, startY, finishX, finishY);
+            GlobalProperties.finishX = (int)point.X;
+            GlobalProperties.finishY = (int)point.Y;
+            Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default", mainCanvas,
+                GlobalProperties.startX, GlobalProperties.startY,
+                GlobalProperties.finishX, GlobalProperties.finishY);            
             ListShapes.Add(shape);
             shape.Draw();                                                
         }

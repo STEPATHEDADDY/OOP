@@ -19,22 +19,18 @@ namespace PictureDraw
         private int X3 { get; set; }
         private int Y3 { get; set; }
 
-        public override void SetInitProperties(
-            string Name, Canvas MainCanvas,
-            int startX, int startY, int finishX, int finishY)
+        public Triangles(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY): base(
+                Name, MainCanvas)
         {
-            //finish not initialize
-            ColorFill = GlobalProperties.ColorFill;
-            ColorStroke = GlobalProperties.ColorStroke;
-            this.startX = startX < finishX ? startX : finishX;
-            this.startY = startY < finishY ? startY : finishY;
-            this.Name = Name;
-            this.MainCanvas = MainCanvas;
+            //finish not initialize 
+            this.startX = Math.Min(startX, finishX);
+            this.startY = Math.Min(startY, finishY);
             Width = Math.Abs(startX - finishX);
             Height = Math.Abs(startY - finishY);
             X1 = 0;
             Y1 = Height;
-            X2 = Width/2;
+            X2 = Width / 2;
             Y2 = 0;
             X3 = Width;
             Y3 = Height;
@@ -63,6 +59,15 @@ namespace PictureDraw
             pointCollection.Add(point2);
             pointCollection.Add(point3);            
             return pointCollection;
+        }
+    }
+
+    class TriangleCreator : ICreator
+    {
+        public Shapes FactoryMethod(string Name, Canvas MainCanvas,
+            int startX, int startY, int finishX, int finishY)
+        {
+            return new Triangles(Name, MainCanvas, startX, startY, finishX, finishY);
         }
     }
 }
