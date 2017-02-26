@@ -10,7 +10,8 @@ using System.Windows.Shapes;
 
 namespace PictureDraw
 {
-    class Triangles : Shapes
+    [Serializable]
+    public class Triangles : Shapes
     {
         private int X1 { get; set; }
         private int Y1 { get; set; }
@@ -19,13 +20,16 @@ namespace PictureDraw
         private int X3 { get; set; }
         private int Y3 { get; set; }
 
-        public Triangles(string Name, Canvas MainCanvas,
-            int startX, int startY, int finishX, int finishY): base(
-                Name, MainCanvas)
+        public Triangles() { }
+    
+        public Triangles(string Name,
+            int startX, int startY, int finishX, int finishY): base(Name)
         {
             //finish not initialize 
             this.startX = Math.Min(startX, finishX);
             this.startY = Math.Min(startY, finishY);
+            this.finishX = Math.Max(startX, finishX);
+            this.finishY = Math.Max(startY, finishY);
             Width = Math.Abs(startX - finishX);
             Height = Math.Abs(startY - finishY);
             X1 = 0;
@@ -43,8 +47,8 @@ namespace PictureDraw
             triangle.Stroke = ColorStroke;
             triangle.Fill = ColorFill;
             var pointCollection = GetPointCollection();
-            triangle.Points = pointCollection;            
-            MainCanvas.Children.Add(triangle);
+            triangle.Points = pointCollection;
+            GlobalProperties.MainCanvas.Children.Add(triangle);
             Canvas.SetLeft(triangle, startX);
             Canvas.SetTop(triangle, startY);
         }
@@ -61,13 +65,13 @@ namespace PictureDraw
             return pointCollection;
         }
     }
-
+    
     class TriangleCreator : ICreator
     {
-        public Shapes FactoryMethod(string Name, Canvas MainCanvas,
+        public Shapes FactoryMethod(string Name,
             int startX, int startY, int finishX, int finishY)
         {
-            return new Triangles(Name, MainCanvas, startX, startY, finishX, finishY);
+            return new Triangles(Name, startX, startY, finishX, finishY);
         }
     }
 }

@@ -56,6 +56,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Circles.cs" />
+    <Compile Include="Dialogs.cs" />
     <Compile Include="GlobalProperties.cs" />
     <Compile Include="Lines.cs" />
     <Compile Include="Rectangles.cs" />

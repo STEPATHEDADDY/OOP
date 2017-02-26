@@ -6,21 +6,27 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Xml.Serialization;
 
 namespace PictureDraw
 {
-    class Rectangles : Shapes
+    [Serializable]
+    public class Rectangles : Shapes
     {
-        private int Width { get; set; }
-        private int Height { get; set; }
+        public Rectangles() { }
 
-        public Rectangles(string Name, Canvas MainCanvas,
+        ///public int Width { get; set; }
+        //public int Height { get; set; }
+
+        public Rectangles(string Name,
             int startX, int startY, int finishX, int finishY): base(
-                Name, MainCanvas)
+                Name)
         {
             //finish not initialize 
             this.startX = Math.Min(startX, finishX);
             this.startY = Math.Min(startY, finishY);
+            this.finishX = Math.Max(startX, finishX);            
+            this.finishY = Math.Max(startY, finishY);            
             Width = Math.Abs(startX - finishX);
             Height = Math.Abs(startY - finishY);
         }
@@ -32,8 +38,8 @@ namespace PictureDraw
             rect.Stroke = ColorStroke;
             rect.Fill = ColorFill;
             rect.Width = Width;
-            rect.Height = Height;            
-            MainCanvas.Children.Add(rect);
+            rect.Height = Height;
+            GlobalProperties.MainCanvas.Children.Add(rect);
             Canvas.SetLeft(rect, startX);
             Canvas.SetTop(rect, startY);
         }      
@@ -41,10 +47,10 @@ namespace PictureDraw
 
     class RectangleCreator : ICreator
     {
-        public Shapes FactoryMethod(string Name, Canvas MainCanvas,
+        public Shapes FactoryMethod(string Name,
             int startX, int startY, int finishX, int finishY)
         {
-            return new Rectangles(Name, MainCanvas, startX, startY, finishX, finishY);
+            return new Rectangles(Name, startX, startY, finishX, finishY);
         }
     }
 }

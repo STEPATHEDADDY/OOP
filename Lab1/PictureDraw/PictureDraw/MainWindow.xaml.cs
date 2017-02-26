@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,16 +14,18 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Serialization;
+using Microsoft.Win32;
 
 namespace PictureDraw
 {
     //TODO Activator.CreateInstance(typeof (Circles), 10, 20, 30, 40);
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    /// </summary>    
     public partial class MainWindow : Window
     {
-        private ArrayList ListShapes = new ArrayList();
+        public List<Shapes> ListShapes = new List<Shapes>();
         private Dictionary<string, ICreator> creators = new Dictionary<string, ICreator>
             {
                 { "Circle", new CircleCreator() },
@@ -37,6 +40,7 @@ namespace PictureDraw
         public MainWindow()
         {
             InitializeComponent();
+            GlobalProperties.MainCanvas = mainCanvas;
         }        
 
         private void buttonShape_Click(object sender, RoutedEventArgs e)
@@ -60,21 +64,35 @@ namespace PictureDraw
 
         private void mainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var point = e.GetPosition(mainCanvas);
+            var point = e.GetPosition(GlobalProperties.MainCanvas);
             GlobalProperties.startX = (int) point.X;
             GlobalProperties.startY = (int) point.Y;
         }
 
         private void mainCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            var point = e.GetPosition(mainCanvas);
+            var point = e.GetPosition(GlobalProperties.MainCanvas);
             GlobalProperties.finishX = (int)point.X;
             GlobalProperties.finishY = (int)point.Y;
-            Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default", mainCanvas,
+            Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
                 GlobalProperties.startX, GlobalProperties.startY,
                 GlobalProperties.finishX, GlobalProperties.finishY);            
             ListShapes.Add(shape);
             shape.Draw();                                                
+        }
+
+        private void buttonSaveLoad_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button) sender;
+
+            if (button.Equals(buttonSaveImage))
+            {
+                Dialogs.SaveFile(ListShapes);
+            }
+            if (button.Equals(buttonLoadImage))
+            {                              
+                ListShapes = Dialogs.OpenFile();                
+            }            
         }
     }
 }

@@ -6,18 +6,25 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Xml.Serialization;
 
 namespace PictureDraw
 {
-    class Squares : Shapes
+    [XmlInclude(typeof(Shapes))]
+    [Serializable]
+    public class Squares : Shapes
     {
-        public Squares(string Name, Canvas MainCanvas,
+        public Squares() { }
+
+        public Squares(string Name,
             int startX, int startY, int finishX, int finishY): base(
-                Name, MainCanvas)
+                Name)
         {
             //finish not initialize 
             this.startX = Math.Min(startX, finishX);
             this.startY = Math.Min(startY, finishY);
+            this.finishX = Math.Max(startX, finishX);
+            this.finishY = Math.Max(startY, finishY);
             Width = Math.Abs(startX - finishX);
             Height = Math.Abs(startY - finishY);
             Width = Height = Width < Height ? Width : Height;
@@ -28,19 +35,19 @@ namespace PictureDraw
             var square = new Rectangle();
             square.Stroke = ColorStroke;
             square.Fill = ColorFill;
-            square.Width = square.Height = Width;            
-            MainCanvas.Children.Add(square);
+            square.Width = square.Height = Width;
+            GlobalProperties.MainCanvas.Children.Add(square);
             Canvas.SetLeft(square, startX);
             Canvas.SetTop(square, startY);
         }
     }
-
+    
     class SquareCreator : ICreator
     {
-        public Shapes FactoryMethod(string Name, Canvas MainCanvas,
+        public Shapes FactoryMethod(string Name,
             int startX, int startY, int finishX, int finishY)
         {
-            return new Squares(Name, MainCanvas, startX, startY, finishX, finishY);
+            return new Squares(Name, startX, startY, finishX, finishY);
         }
     }
 }

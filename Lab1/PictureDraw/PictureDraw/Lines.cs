@@ -9,11 +9,14 @@ using System.Windows.Shapes;
 
 namespace PictureDraw
 {
-    class Lines : Shapes
+    [Serializable]
+    public class Lines : Shapes
     {
-        public Lines(string Name, Canvas MainCanvas,
+        public Lines() { }
+
+        public Lines(string Name,
             int startX, int startY, int finishX, int finishY): base(
-                Name, MainCanvas)
+                Name)
         {
             this.startX = startX;
             this.startY = startY;
@@ -32,16 +35,16 @@ namespace PictureDraw
             line.Y2 = finishY;
             line.Stroke = ColorStroke;
             line.Fill = ColorFill;
-            MainCanvas.Children.Add(line);
+            GlobalProperties.MainCanvas.Children.Add(line);
         }
     }
-
+    
     class LineCreator : ICreator
     {
-        public Shapes FactoryMethod(string Name, Canvas MainCanvas,
+        public Shapes FactoryMethod(string Name,
             int startX, int startY, int finishX, int finishY)
         {
-            return new Lines(Name, MainCanvas, startX, startY, finishX, finishY);
+            return new Lines(Name, startX, startY, finishX, finishY);
         }
     }
 }

@@ -26,5 +26,7 @@
             <Rectangle x:Name="colorBlack" Fill="Black" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Left="28" Canvas.Top="37"/>
             <Rectangle x:Name="colorPurple" Fill="#FF8800FF" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Top="37"/>
         </Canvas>
+        <Button x:Name="buttonLoadImage" Content="Load Image" HorizontalAlignment="Left" Margin="1072,733,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonSaveLoad_Click" Background="#FF0B0029" Height="22"/>
+        <Button x:Name="buttonSaveImage" Content="Save Image" HorizontalAlignment="Left" Margin="1072,703,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonSaveLoad_Click" Background="#FF0B0029" Height="22"/>
     </Grid>
 </Window>
