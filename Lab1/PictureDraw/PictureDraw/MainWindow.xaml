@@ -15,7 +15,7 @@
         <Button x:Name="buttonLine" Content="Line" HorizontalAlignment="Left" Margin="10,81,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0B0029"/>
         <Button x:Name="buttonSquare" Content="Square" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0B0029"/>
         <Button x:Name="buttonTetragon" Content="Tetragon" HorizontalAlignment="Left" Margin="10,129,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0B0029"/>
-        <Canvas x:Name="mainCanvas" Margin="133,0,-0.4,79.4" MouseDown="mainCanvas_MouseDown" MouseUp="mainCanvas_MouseUp">
+        <Canvas x:Name="mainCanvas" Margin="133,0,-0.4,79.4" MouseDown="mainCanvas_MouseDown" MouseUp="mainCanvas_MouseUp" MouseMove="mainCanvas_MouseMove">
             <Rectangle x:Name="rectMainCanvas" Fill="White" Height="691" Width="1061" Stroke="White"/>
         </Canvas>
         <Canvas x:Name="canvasColors" Margin="133,696,765.6,5.4">
@@ -28,5 +28,7 @@
         </Canvas>
         <Button x:Name="buttonLoadImage" Content="Load Image" HorizontalAlignment="Left" Margin="1072,733,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonSaveLoad_Click" Background="#FF0B0029" Height="22"/>
         <Button x:Name="buttonSaveImage" Content="Save Image" HorizontalAlignment="Left" Margin="1072,703,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonSaveLoad_Click" Background="#FF0B0029" Height="22"/>
+        <Button x:Name="buttonDraw" Content="Draw" HorizontalAlignment="Left" Margin="10,223,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonDrawSelect_Click" Background="#FF0B0029"/>
+        <Button x:Name="buttonSelect" Content="Select" HorizontalAlignment="Left" Margin="10,247,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonDrawSelect_Click" Background="#FF0B0029"/>
     </Grid>
 </Window>

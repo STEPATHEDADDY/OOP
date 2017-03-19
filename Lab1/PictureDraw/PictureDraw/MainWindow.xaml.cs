@@ -41,6 +41,8 @@ namespace PictureDraw
         {
             InitializeComponent();
             GlobalProperties.MainCanvas = mainCanvas;
+            GlobalProperties.selectedShape = null;
+            GlobalProperties.isShapeSelected = false;
         }        
 
         private void buttonShape_Click(object sender, RoutedEventArgs e)
@@ -64,21 +66,50 @@ namespace PictureDraw
 
         private void mainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var point = e.GetPosition(GlobalProperties.MainCanvas);
-            GlobalProperties.startX = (int) point.X;
-            GlobalProperties.startY = (int) point.Y;
+            if (GlobalProperties.isDraw)
+            {
+                var point = e.GetPosition(GlobalProperties.MainCanvas);
+                GlobalProperties.startX = (int)point.X;
+                GlobalProperties.startY = (int)point.Y;
+                GlobalProperties.MainCanvas.Children.Add(new Rectangle());
+            }
+            else
+            {
+                if (!GlobalProperties.isShapeSelected)
+                {
+                    if (GlobalProperties.selectedShape != null)
+                    {
+                        GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape.selection);
+                    }
+                    GlobalProperties.selectedShape = null;
+                }
+                GlobalProperties.isShapeSelected = false;
+            }                            
         }
 
         private void mainCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            var point = e.GetPosition(GlobalProperties.MainCanvas);
-            GlobalProperties.finishX = (int)point.X;
-            GlobalProperties.finishY = (int)point.Y;
-            Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
-                GlobalProperties.startX, GlobalProperties.startY,
-                GlobalProperties.finishX, GlobalProperties.finishY);            
-            ListShapes.Add(shape);
-            shape.Draw();                                                
+            if (GlobalProperties.isDraw)
+            {
+                ListShapes.Add(GlobalProperties.drawShape);
+                //GlobalProperties.drawShape.Draw();                               
+            }                                               
+        }
+
+        private void mainCanvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && GlobalProperties.isDraw)
+            {
+                var point = e.GetPosition(GlobalProperties.MainCanvas);
+                GlobalProperties.finishX = (int)point.X;
+                GlobalProperties.finishY = (int)point.Y;
+                Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
+                    GlobalProperties.startX, GlobalProperties.startY,
+                    GlobalProperties.finishX, GlobalProperties.finishY);                
+                GlobalProperties.MainCanvas.Children.RemoveAt(GlobalProperties.MainCanvas.Children.Count - 1);
+                shape.Draw();                
+                GlobalProperties.drawShape = shape;                
+            }
         }
 
         private void buttonSaveLoad_Click(object sender, RoutedEventArgs e)
@@ -92,7 +123,21 @@ namespace PictureDraw
             if (button.Equals(buttonLoadImage))
             {                              
                 ListShapes = Dialogs.OpenFile();                
-            }            
+            }                        
+        }
+   
+
+        private void buttonDrawSelect_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button) sender;
+            if (Equals(button, buttonDraw))
+            {
+                GlobalProperties.isDraw = true;
+            }
+            if (Equals(button, buttonSelect))
+            {
+                GlobalProperties.isDraw = false;
+            }
         }
     }
 }

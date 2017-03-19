@@ -33,7 +33,7 @@ namespace PictureDraw
         }            
 
         public override void Draw()
-        {
+        {            
             Ellipse circle = new Ellipse();
             circle.Stroke = ColorStroke;
             circle.Fill = ColorFill;

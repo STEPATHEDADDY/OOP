@@ -23,6 +23,10 @@ namespace PictureDraw
         public static int finishX { get; set; }
         public static int finishY { get; set; }
         public static ICreator currentShape { get; set; }
+        public static bool isDraw { get; set; }
+        public static Shapes drawShape { get; set; }
+        public static Shapes selectedShape { get; set; }
+        public static bool isShapeSelected { get; set; }
     }
 
 }
