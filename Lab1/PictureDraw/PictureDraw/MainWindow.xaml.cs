@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,6 +42,7 @@ namespace PictureDraw
         {
             InitializeComponent();
             GlobalProperties.MainCanvas = mainCanvas;
+            GlobalProperties.RectCanvas = rectMainCanvas;
             GlobalProperties.selectedShape = null;
             GlobalProperties.isShapeSelected = false;
         }        
@@ -70,8 +72,8 @@ namespace PictureDraw
             {
                 var point = e.GetPosition(GlobalProperties.MainCanvas);
                 GlobalProperties.startX = (int)point.X;
-                GlobalProperties.startY = (int)point.Y;
-                GlobalProperties.MainCanvas.Children.Add(new Rectangle());
+                GlobalProperties.startY = (int)point.Y;                
+                GlobalProperties.MainCanvas.Children.Add(new Rectangle());                
             }
             else
             {
@@ -90,8 +92,9 @@ namespace PictureDraw
         private void mainCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (GlobalProperties.isDraw)
-            {
+            {                
                 ListShapes.Add(GlobalProperties.drawShape);
+                Debug.WriteLine($"{GlobalProperties.drawShape.startX} {GlobalProperties.drawShape.startY}");                
                 //GlobalProperties.drawShape.Draw();                               
             }                                               
         }
@@ -101,8 +104,8 @@ namespace PictureDraw
             if (e.LeftButton == MouseButtonState.Pressed && GlobalProperties.isDraw)
             {
                 var point = e.GetPosition(GlobalProperties.MainCanvas);
-                GlobalProperties.finishX = (int)point.X;
-                GlobalProperties.finishY = (int)point.Y;
+                GlobalProperties.finishX = (float)point.X - 1;
+                GlobalProperties.finishY = (float)point.Y - 1;
                 Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
                     GlobalProperties.startX, GlobalProperties.startY,
                     GlobalProperties.finishX, GlobalProperties.finishY);                

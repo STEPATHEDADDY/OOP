@@ -15,7 +15,7 @@ namespace PictureDraw
         public Lines() { }
 
         public Lines(string Name,
-            int startX, int startY, int finishX, int finishY): base(
+            float startX, float startY, float finishX, float finishY): base(
                 Name)
         {
             this.startX = startX;
@@ -42,7 +42,7 @@ namespace PictureDraw
     class LineCreator : ICreator
     {
         public Shapes FactoryMethod(string Name,
-            int startX, int startY, int finishX, int finishY)
+            float startX, float startY, float finishX, float finishY)
         {
             return new Lines(Name, startX, startY, finishX, finishY);
         }

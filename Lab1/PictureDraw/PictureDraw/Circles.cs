@@ -14,12 +14,12 @@ namespace PictureDraw
     [Serializable]
     public class Circles : Shapes
     {
-        public int Radius { get; set; }
+        public float Radius { get; set; }
 
         public Circles() { }
 
         public Circles(string Name,
-            int startX, int startY, int finishX, int finishY): base(
+            float startX, float startY, float finishX, float finishY): base(
                 Name)
         {
             //finish not initialize 
@@ -48,7 +48,7 @@ namespace PictureDraw
     class CircleCreator : ICreator
     {
         public Shapes FactoryMethod(string Name,
-            int startX, int startY, int finishX, int finishY)
+            float startX, float startY, float finishX, float finishY)
         {
             return new Circles(Name, startX, startY, finishX, finishY);
         }

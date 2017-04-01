@@ -60,7 +60,6 @@
     <Compile Include="GlobalProperties.cs" />
     <Compile Include="ISelectable.cs" />
     <Compile Include="Lines.cs" />
-    <Compile Include="MoveThumb.cs" />
     <Compile Include="Rectangles.cs" />
     <Compile Include="Shapes.cs" />
     <Compile Include="Squares.cs" />

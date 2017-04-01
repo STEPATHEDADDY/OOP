@@ -17,7 +17,7 @@ namespace PictureDraw
         public Squares() { }
 
         public Squares(string Name,
-            int startX, int startY, int finishX, int finishY): base(
+            float startX, float startY, float finishX, float finishY): base(
                 Name)
         {
             //finish not initialize 
@@ -45,7 +45,7 @@ namespace PictureDraw
     class SquareCreator : ICreator
     {
         public Shapes FactoryMethod(string Name,
-            int startX, int startY, int finishX, int finishY)
+            float startX, float startY, float finishX, float finishY)
         {
             return new Squares(Name, startX, startY, finishX, finishY);
         }

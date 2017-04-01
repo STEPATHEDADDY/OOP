@@ -13,17 +13,17 @@ namespace PictureDraw
     [Serializable]
     public class Triangles : Shapes
     {
-        private int X1 { get; set; }
-        private int Y1 { get; set; }
-        private int X2 { get; set; }
-        private int Y2 { get; set; }
-        private int X3 { get; set; }
-        private int Y3 { get; set; }
+        private float X1 { get; set; }
+        private float Y1 { get; set; }
+        private float X2 { get; set; }
+        private float Y2 { get; set; }
+        private float X3 { get; set; }
+        private float Y3 { get; set; }
 
         public Triangles() { }
     
         public Triangles(string Name,
-            int startX, int startY, int finishX, int finishY): base(Name)
+            float startX, float startY, float finishX, float finishY): base(Name)
         {
             //finish not initialize 
             this.startX = Math.Min(startX, finishX);
@@ -69,7 +69,7 @@ namespace PictureDraw
     class TriangleCreator : ICreator
     {
         public Shapes FactoryMethod(string Name,
-            int startX, int startY, int finishX, int finishY)
+            float startX, float startY, float finishX, float finishY)
         {
             return new Triangles(Name, startX, startY, finishX, finishY);
         }

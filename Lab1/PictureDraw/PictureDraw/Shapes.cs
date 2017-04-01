@@ -21,12 +21,12 @@ namespace PictureDraw
         public string Name { get; set; }
         public SolidColorBrush ColorFill { get; set; }        
         public SolidColorBrush ColorStroke { get; set; }  
-        public int startX { get; set; } 
-        public int startY { get; set; } 
-        public int finishX { get; set; } 
-        public int finishY { get; set; }         
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public float startX { get; set; } 
+        public float startY { get; set; } 
+        public float finishX { get; set; } 
+        public float finishY { get; set; }         
+        public float Width { get; set; }
+        public float Height { get; set; }
         public UIElement selection { get; set; }
 
         public Shapes() { }
@@ -45,6 +45,6 @@ namespace PictureDraw
     public interface ICreator
     {
         Shapes FactoryMethod(string Name,
-            int startX, int startY, int finishX, int finishY);
+            float startX, float startY, float finishX, float finishY);
     }
 }
