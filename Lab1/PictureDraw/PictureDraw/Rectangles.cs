@@ -23,8 +23,8 @@ namespace PictureDraw
         {
             base.OnRender(drawingContext);
             
-            drawingContext.DrawRectangle(Brushes.Aquamarine,
-                new Pen(Brushes.Black, 1),
+            drawingContext.DrawRectangle(GlobalProperties.ColorFill,
+                new Pen(GlobalProperties.ColorStroke, 1),
                 new Rect(0, 0, Width, Height));
         }
 
@@ -55,10 +55,9 @@ namespace PictureDraw
                     GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape.selection);
                 }
                 GlobalProperties.selectedShape = rect;
-                var forusFrame = getFocuseFrame(rect.Width, rect.Height, GlobalProperties.MainCanvas, rect.startX,
+                var focusFrame = getFocusFrame(rect.Width, rect.Height, GlobalProperties.MainCanvas, rect.startX,
                     rect.startY);
-                rect.selection = forusFrame;
-                Debug.WriteLine($"{GlobalProperties.selectedShape.startX} {GlobalProperties.selectedShape.startY}START");
+                rect.selection = focusFrame;                
                 GlobalProperties.isShapeSelected = true;
             }            
         }
@@ -67,16 +66,7 @@ namespace PictureDraw
         {
             if (!GlobalProperties.isDraw)
             {
-                //var rect = (Rectangles)sender;
-                var temp = e.GetPosition(GlobalProperties.MainCanvas);
-                //var point = new Point(GlobalProperties.selectedShape.startX, GlobalProperties.selectedShape.startY);
-                GlobalProperties.selectedShapePoint = temp;
-                //GlobalProperties.point1 = temp;
-                //Canvas.SetLeft(GlobalProperties.selectedShape, GlobalProperties.selectedShape.startX + (GlobalProperties.point1.X - GlobalProperties.selectedShapePoint.X));
-                //Canvas.SetTop(GlobalProperties.selectedShape, GlobalProperties.selectedShape.startY + (GlobalProperties.point1.Y - GlobalProperties.selectedShapePoint.Y));
-                //GlobalProperties.selectedShape.startX = (float)(GlobalProperties.selectedShape.startX + (GlobalProperties.point1.X - GlobalProperties.selectedShapePoint.X));
-                //GlobalProperties.selectedShape.startY = (float)(GlobalProperties.selectedShape.startY + (GlobalProperties.point1.Y - GlobalProperties.selectedShapePoint.Y));
-                //GlobalProperties.selectedShapePoint = new Point(GlobalProperties.point1.X, GlobalProperties.point1.Y);
+                GlobalProperties.selectedShapePoint = e.GetPosition(GlobalProperties.MainCanvas);
             }
         }
 
@@ -84,40 +74,26 @@ namespace PictureDraw
         {
             if (e.LeftButton == MouseButtonState.Pressed && GlobalProperties.selectedShape != null && !GlobalProperties.isDraw)
             {                                                            
-                GlobalProperties.point1 = e.GetPosition(GlobalProperties.MainCanvas);
-                //var point4 = new Point(GlobalProperties.selectedShape.startX, GlobalProperties.selectedShape.startY);
-                //var point2 = e.GetPosition(GlobalProperties.RectCanvas);
-                //var point3 = new Point(Canvas.GetLeft(GlobalProperties.selectedShape), (float)(Canvas.GetTop(GlobalProperties.selectedShape)));
-                //Debug.WriteLine($"{point1.X} {point1.Y} CANVAS");
-                //Debug.WriteLine($"{point3.X} {point4.Y} CANVAS");
-                //Debug.WriteLine($"{point2.X} {point2.Y} RECT");
-                //Debug.WriteLine($"{point3.X} {point3.Y} SHAPE");
-                //var pointRect = new Point((double)GlobalProperties.selectedShape.startX, (double)GlobalProperties.selectedShape.startY);
-                //Canvas.SetLeft(GlobalProperties.selectedShape.selection, pointRect.X);
-                //Canvas.SetTop(GlobalProperties.selectedShape.selection, pointRect.Y); 
-                //var f = Canvas.GetLeft(GlobalProperties.selectedShape);     
-                Canvas.SetLeft(GlobalProperties.selectedShape, GlobalProperties.selectedShape.startX + (GlobalProperties.point1.X - GlobalProperties.selectedShapePoint.X));
-                Canvas.SetTop(GlobalProperties.selectedShape, GlobalProperties.selectedShape.startY + (GlobalProperties.point1.Y - GlobalProperties.selectedShapePoint.Y));
-                GlobalProperties.selectedShape.startX = (float)(GlobalProperties.selectedShape.startX + (GlobalProperties.point1.X - GlobalProperties.selectedShapePoint.X));
-                GlobalProperties.selectedShape.startY = (float)(GlobalProperties.selectedShape.startY + (GlobalProperties.point1.Y - GlobalProperties.selectedShapePoint.Y));
-                GlobalProperties.selectedShapePoint = new Point(GlobalProperties.point1.X, GlobalProperties.point1.Y);
-                //Debug.WriteLine($"{GlobalProperties.selectedShape.startX} {GlobalProperties.selectedShape.startY} START");
-                //GlobalProperties.selectedShape.startX = (float)point1.X - GlobalProperties.selectedShape.Width;
-                //GlobalProperties.selectedShape.startY = (float)point1.X - GlobalProperties.selectedShape.Width;
-
-                //Debug.WriteLine($"{point1.X} {GlobalProperties.selectedShapePoint.X} {point1.Y} {GlobalProperties.selectedShapePoint.Y} FINISH");
-                //Debug.WriteLine("-----");
+                GlobalProperties.currentMousePoint = e.GetPosition(GlobalProperties.MainCanvas);
+                var offset = new Point(GlobalProperties.selectedShape.startX + (GlobalProperties.currentMousePoint.X - GlobalProperties.selectedShapePoint.X),
+                    GlobalProperties.selectedShape.startY + (GlobalProperties.currentMousePoint.Y - GlobalProperties.selectedShapePoint.Y));  
+                Canvas.SetLeft(GlobalProperties.selectedShape, offset.X);
+                Canvas.SetTop(GlobalProperties.selectedShape, offset.Y);
+                Canvas.SetLeft(GlobalProperties.selectedShape.selection, offset.X - GlobalProperties.frameSize / 2);
+                Canvas.SetTop(GlobalProperties.selectedShape.selection, offset.Y - GlobalProperties.frameSize / 2);
+                GlobalProperties.selectedShape.startX = (float)(offset.X);
+                GlobalProperties.selectedShape.startY = (float)(offset.Y);
+                //TODO FINISH POINTS
+                GlobalProperties.selectedShapePoint = new Point(GlobalProperties.currentMousePoint.X, GlobalProperties.currentMousePoint.Y);
             }
         }
 
         public void stopMovingCurrentShape(object sender, MouseEventArgs e)
         {
-            //GlobalProperties.selectedShape = null;
-            //if (!GlobalProperties.isDraw)
-            //{
-            //    var mousePoint = e.GetPosition(GlobalProperties.MainCanvas);
-            //    var rect = (Rectangles)sender;
-            //}            
+            GlobalProperties.selectedShape.finishX = GlobalProperties.selectedShape.startX +
+                                                     GlobalProperties.selectedShape.Width;        
+            GlobalProperties.selectedShape.finishY = GlobalProperties.selectedShape.startY +
+                                                     GlobalProperties.selectedShape.Height;
         }
 
         public override void Draw()
@@ -127,17 +103,17 @@ namespace PictureDraw
             GlobalProperties.MainCanvas.Children.Add(this);            
         }
 
-        private Rectangle getFocuseFrame(float width, float height, Canvas canvas, float x, float y)
+        private Rectangle getFocusFrame(float width, float height, Canvas canvas, float x, float y)
         {
             Rectangle focus = new Rectangle();
             focus.Stroke = new SolidColorBrush(Colors.SlateBlue);
             focus.StrokeDashArray = new DoubleCollection(new List<double> { 5, 1 });
             focus.StrokeThickness = 2.0;
-            focus.Width = width;
-            focus.Height = height;
+            focus.Width = width + GlobalProperties.frameSize;
+            focus.Height = height + GlobalProperties.frameSize;
             GlobalProperties.MainCanvas.Children.Add(focus);
-            Canvas.SetLeft(focus, x);
-            Canvas.SetTop(focus, y);
+            Canvas.SetLeft(focus, x - GlobalProperties.frameSize / 2);
+            Canvas.SetTop(focus, y - GlobalProperties.frameSize / 2);
             return focus;
         }
     }

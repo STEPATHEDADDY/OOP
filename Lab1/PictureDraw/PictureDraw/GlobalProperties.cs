@@ -30,8 +30,9 @@ namespace PictureDraw
         public static Shapes selectedShape { get; set; }
         public static bool isShapeSelected { get; set; }
         public static Point selectedShapePoint { get; set; }
-        public static Point point1 { get; set; }
+        public static Point currentMousePoint { get; set; }
         public static Rectangle RectCanvas { get; set; }
+        public static float frameSize { get; set; }
     }
 
 }

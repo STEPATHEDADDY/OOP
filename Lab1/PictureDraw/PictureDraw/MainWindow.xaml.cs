@@ -35,8 +35,7 @@ namespace PictureDraw
                 { "Square", new SquareCreator() },
                 { "Tetragon", new TetragonCreator() },
                 { "Triangle", new TriangleCreator() },
-            };
-        //private List<Shapes> ListShapes = new List<Shapes>();
+            };        
 
         public MainWindow()
         {
@@ -45,6 +44,7 @@ namespace PictureDraw
             GlobalProperties.RectCanvas = rectMainCanvas;
             GlobalProperties.selectedShape = null;
             GlobalProperties.isShapeSelected = false;
+            GlobalProperties.frameSize = 12;
         }        
 
         private void buttonShape_Click(object sender, RoutedEventArgs e)
@@ -69,7 +69,7 @@ namespace PictureDraw
         private void mainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (GlobalProperties.isDraw)
-            {
+            {                
                 var point = e.GetPosition(GlobalProperties.MainCanvas);
                 GlobalProperties.startX = (int)point.X;
                 GlobalProperties.startY = (int)point.Y;                
@@ -89,16 +89,6 @@ namespace PictureDraw
             }                            
         }
 
-        private void mainCanvas_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (GlobalProperties.isDraw)
-            {                
-                ListShapes.Add(GlobalProperties.drawShape);
-                Debug.WriteLine($"{GlobalProperties.drawShape.startX} {GlobalProperties.drawShape.startY}");                
-                //GlobalProperties.drawShape.Draw();                               
-            }                                               
-        }
-
         private void mainCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && GlobalProperties.isDraw)
@@ -112,6 +102,14 @@ namespace PictureDraw
                 GlobalProperties.MainCanvas.Children.RemoveAt(GlobalProperties.MainCanvas.Children.Count - 1);
                 shape.Draw();                
                 GlobalProperties.drawShape = shape;                
+            }
+        }
+
+        private void mainCanvas_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (GlobalProperties.isDraw)
+            {
+                ListShapes.Add(GlobalProperties.drawShape);
             }
         }
 
@@ -129,7 +127,6 @@ namespace PictureDraw
             }                        
         }
    
-
         private void buttonDrawSelect_Click(object sender, RoutedEventArgs e)
         {
             var button = (Button) sender;
