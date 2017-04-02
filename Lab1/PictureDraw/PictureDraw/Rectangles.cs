@@ -23,25 +23,47 @@ namespace PictureDraw
         {
             base.OnRender(drawingContext);
             
-            drawingContext.DrawRectangle(GlobalProperties.ColorFill,
-                new Pen(GlobalProperties.ColorStroke, 1),
+            drawingContext.DrawRectangle(new SolidColorBrush(ColorFill), 
+                new Pen(new SolidColorBrush(ColorStroke), GlobalProperties.Thickness),
                 new Rect(0, 0, Width, Height));
         }
 
-        public Rectangles(string Name,
-            float startX, float startY, float finishX, float finishY) : base(
-                Name)
+        public Rectangles(string name,
+            float startX, float startY, float finishX, float finishY, Color colorFill, Color colorStroke) : base(
+                name, colorFill, colorStroke)
         {
             this.startX = Math.Min(startX, finishX);
             this.startY = Math.Min(startY, finishY);
             this.finishX = Math.Max(startX, finishX);            
-            this.finishY = Math.Max(startY, finishY);            
-            Width = Math.Abs(startX - finishX);
-            Height = Math.Abs(startY - finishY);        
+            this.finishY = Math.Max(startY, finishY);                   
+            Width = this.finishX - this.startX;
+            Height = this.finishY - this.startY;       
             MouseDown += selectShape;
             MouseDown += setCurrentShape;
             MouseMove += movingCurrentShape;
             MouseUp += stopMovingCurrentShape;
+        }
+
+//        private Rectangle getCbColor(ComboBox cb, SolidColorBrush color)
+//        {
+//            Rectangle rect = null;
+//            foreach (var item in cb.Items)
+//            {
+//                var temp = (Rectangle)item;
+//                var colorRect = (SolidColorBrush)temp.Fill;
+//                if (Equals(colorRect, color))
+//                {
+//                    rect = temp;
+//                }
+//            }
+//            return rect;
+//        }
+
+        private void showPropertiesPanel()
+        {
+            GlobalProperties.PropertiesPanel.Visibility = Visibility.Visible;
+            GlobalProperties.FillSelected.SelectedColor = GlobalProperties.selectedShape.ColorFill;
+            GlobalProperties.BorderSelected.SelectedColor = GlobalProperties.selectedShape.ColorStroke;
         }
 
         public void selectShape(object sender, MouseEventArgs e)
@@ -59,6 +81,7 @@ namespace PictureDraw
                     rect.startY);
                 rect.selection = focusFrame;                
                 GlobalProperties.isShapeSelected = true;
+                showPropertiesPanel();
             }            
         }
 
@@ -90,16 +113,19 @@ namespace PictureDraw
 
         public void stopMovingCurrentShape(object sender, MouseEventArgs e)
         {
-            GlobalProperties.selectedShape.finishX = GlobalProperties.selectedShape.startX +
-                                                     GlobalProperties.selectedShape.Width;        
-            GlobalProperties.selectedShape.finishY = GlobalProperties.selectedShape.startY +
-                                                     GlobalProperties.selectedShape.Height;
+            if (!GlobalProperties.isDraw && GlobalProperties.selectedShape != null)
+            {
+                GlobalProperties.selectedShape.finishX = GlobalProperties.selectedShape.startX +
+                                                        GlobalProperties.selectedShape.Width;
+                GlobalProperties.selectedShape.finishY = GlobalProperties.selectedShape.startY +
+                                                         GlobalProperties.selectedShape.Height;
+            }            
         }
 
         public override void Draw()
         {            
-            Canvas.SetLeft(this, GlobalProperties.startX);
-            Canvas.SetTop(this, GlobalProperties.startY);
+            Canvas.SetLeft(this, startX);
+            Canvas.SetTop(this, startY);
             GlobalProperties.MainCanvas.Children.Add(this);            
         }
 
@@ -121,9 +147,9 @@ namespace PictureDraw
     class RectangleCreator : ICreator
     {
         public Shapes FactoryMethod(string Name,
-            float startX, float startY, float finishX, float finishY)
+            float startX, float startY, float finishX, float finishY, Color colorFill, Color colorStroke)
         {
-            return new Rectangles(Name, startX, startY, finishX, finishY);
+            return new Rectangles(Name, startX, startY, finishX, finishY, colorFill, colorStroke);
         }
     }
 }

@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
 using Microsoft.Win32;
+using Xceed.Wpf.Toolkit;
 
 namespace PictureDraw
 {
@@ -29,12 +30,12 @@ namespace PictureDraw
         public List<Shapes> ListShapes = new List<Shapes>();
         private Dictionary<string, ICreator> creators = new Dictionary<string, ICreator>
             {
-                { "Circle", new CircleCreator() },
-                { "Line", new LineCreator() },
+//                { "Circle", new CircleCreator() },
+//                { "Line", new LineCreator() },
                 { "Rectangle", new RectangleCreator() },
-                { "Square", new SquareCreator() },
-                { "Tetragon", new TetragonCreator() },
-                { "Triangle", new TriangleCreator() },
+//                { "Square", new SquareCreator() },
+//                { "Tetragon", new TetragonCreator() },
+//                { "Triangle", new TriangleCreator() },
             };        
 
         public MainWindow()
@@ -45,7 +46,13 @@ namespace PictureDraw
             GlobalProperties.selectedShape = null;
             GlobalProperties.isShapeSelected = false;
             GlobalProperties.frameSize = 12;
-        }        
+            GlobalProperties.PropertiesPanel = dpProperties;
+            GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
+            GlobalProperties.FillSelected = ClrPckerFillSelected;
+            GlobalProperties.BorderSelected = ClrPckerBorderSelected;
+            ClrPckerFill.SelectedColor = GlobalProperties.ColorFill = Color.FromArgb(255, 100, 100, 100);
+            ClrPckerBorder.SelectedColor = GlobalProperties.ColorStroke = Color.FromArgb(255, 255, 100, 100);            
+        }
 
         private void buttonShape_Click(object sender, RoutedEventArgs e)
         {
@@ -53,16 +60,18 @@ namespace PictureDraw
             GlobalProperties.currentShape = creators[button.Content.ToString()];
         }
 
-        private void color_MouseDown(object sender, MouseButtonEventArgs e)
+        private void ClrPcker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
         {
-            var colorRect = (Rectangle)sender;            
-            if (e.LeftButton == MouseButtonState.Pressed)
+            var cp = (ColorPicker)sender;
+            ColorPicker cpFill = ClrPckerFill;
+            ColorPicker cpBorder = ClrPckerBorder;
+            if (Equals(cp, cpFill))
             {
-                GlobalProperties.ColorFill = (SolidColorBrush)colorRect.Fill;
+                GlobalProperties.ColorFill = cp.SelectedColor.Value;
             }
-            if (e.RightButton == MouseButtonState.Pressed)
+            if (Equals(cp, cpBorder))
             {
-                GlobalProperties.ColorStroke = (SolidColorBrush)colorRect.Fill;
+                GlobalProperties.ColorStroke = cp.SelectedColor.Value;
             }
         }
 
@@ -71,8 +80,8 @@ namespace PictureDraw
             if (GlobalProperties.isDraw)
             {                
                 var point = e.GetPosition(GlobalProperties.MainCanvas);
-                GlobalProperties.startX = (int)point.X;
-                GlobalProperties.startY = (int)point.Y;                
+                GlobalProperties.startX = (float)point.X;
+                GlobalProperties.startY = (float)point.Y;                
                 GlobalProperties.MainCanvas.Children.Add(new Rectangle());                
             }
             else
@@ -82,6 +91,7 @@ namespace PictureDraw
                     if (GlobalProperties.selectedShape != null)
                     {
                         GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape.selection);
+                        GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
                     }
                     GlobalProperties.selectedShape = null;
                 }
@@ -98,7 +108,8 @@ namespace PictureDraw
                 GlobalProperties.finishY = (float)point.Y - 1;
                 Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
                     GlobalProperties.startX, GlobalProperties.startY,
-                    GlobalProperties.finishX, GlobalProperties.finishY);                
+                    GlobalProperties.finishX, GlobalProperties.finishY,
+                    GlobalProperties.ColorFill, GlobalProperties.ColorStroke);                
                 GlobalProperties.MainCanvas.Children.RemoveAt(GlobalProperties.MainCanvas.Children.Count - 1);
                 shape.Draw();                
                 GlobalProperties.drawShape = shape;                
@@ -137,6 +148,26 @@ namespace PictureDraw
             if (Equals(button, buttonSelect))
             {
                 GlobalProperties.isDraw = false;
+            }
+        }
+
+        private void sliderThickness_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            GlobalProperties.Thickness = (float)sliderThickness.Value;
+        }
+
+        private void ClrPckerSelected_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            if (!GlobalProperties.isShapeSelected)
+            {
+                GlobalProperties.selectedShape.ColorFill = ClrPckerFillSelected.SelectedColor.Value;
+                GlobalProperties.selectedShape.ColorStroke = ClrPckerBorderSelected.SelectedColor.Value;
+                GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);
+                Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
+                    GlobalProperties.selectedShape.startX, GlobalProperties.selectedShape.startY,
+                    GlobalProperties.selectedShape.finishX, GlobalProperties.selectedShape.finishY,
+                    GlobalProperties.selectedShape.ColorFill, GlobalProperties.selectedShape.ColorStroke);                
+                shape.Draw();
             }
         }
     }

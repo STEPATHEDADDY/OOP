@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PictureDraw"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:m="clr-namespace:PictureDraw"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1200">
     <Grid>
@@ -18,17 +19,25 @@
         <Canvas x:Name="mainCanvas" Margin="133,0,-0.4,79.4" MouseDown="mainCanvas_MouseDown" MouseUp="mainCanvas_MouseUp" MouseMove="mainCanvas_MouseMove">
             <Rectangle x:Name="rectMainCanvas" Fill="White" Height="691" Width="1061" Stroke="White"/>
         </Canvas>
-        <Canvas x:Name="canvasColors" Margin="133,696,765.6,5.4">
-            <Rectangle x:Name="colorRed" Fill="Red" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Top="6"/>
-            <Rectangle x:Name="colorBlue" Fill="#FF00A8FF" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Left="55" Canvas.Top="7"/>
-            <Rectangle x:Name="colorYellow" Fill="#FFFFD300" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Left="55" Canvas.Top="37"/>
-            <Rectangle x:Name="colorAqua" Fill="#FF00FFCD" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Top="7" Canvas.Left="28"/>
-            <Rectangle x:Name="colorBlack" Fill="Black" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Left="28" Canvas.Top="37"/>
-            <Rectangle x:Name="colorPurple" Fill="#FF8800FF" Height="22" Width="22" Stroke="White" MouseDown="color_MouseDown" Canvas.Top="37"/>
-        </Canvas>
+        <DockPanel x:Name="dpColors" LastChildFill="False" VerticalAlignment="Center" Margin="134,700,946.6,10.4" Height="60">
+            <Label HorizontalAlignment="Center" Content="Fill" VerticalAlignment="Center" Width="26" Height="30" Foreground="White" VerticalContentAlignment="Center" Margin="0,0,0,30"/>
+            <xctk:ColorPicker x:Name="ClrPckerFill" Margin="40,5,0,34" RenderTransformOrigin="0.673,-0.653" DockPanel.Dock="Left" Width="41" SelectedColorChanged="ClrPcker_SelectedColorChanged"/>
+            <Label HorizontalAlignment="Center" Content="Border" VerticalAlignment="Center" Width="50" Height="30" Foreground="White" VerticalContentAlignment="Center" Margin="-164,0,0,-30"/>
+            <xctk:ColorPicker x:Name="ClrPckerBorder" Margin="-39,34,0,5" RenderTransformOrigin="0.673,-0.653" DockPanel.Dock="Left" Width="41" SelectedColorChanged="ClrPcker_SelectedColorChanged"/>
+        </DockPanel>
         <Button x:Name="buttonLoadImage" Content="Load Image" HorizontalAlignment="Left" Margin="1072,733,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonSaveLoad_Click" Background="#FF0B0029" Height="22"/>
         <Button x:Name="buttonSaveImage" Content="Save Image" HorizontalAlignment="Left" Margin="1072,703,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonSaveLoad_Click" Background="#FF0B0029" Height="22"/>
         <Button x:Name="buttonDraw" Content="Draw" HorizontalAlignment="Left" Margin="10,223,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonDrawSelect_Click" Background="#FF0B0029"/>
         <Button x:Name="buttonSelect" Content="Select" HorizontalAlignment="Left" Margin="10,247,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonDrawSelect_Click" Background="#FF0B0029"/>
+        <DockPanel VerticalAlignment="Center" Margin="252,708,748.6,22.4" Height="40">
+            <Slider x:Name="sliderThickness" HorizontalAlignment="Left" Margin="5, 11" VerticalAlignment="Top" Width="150" TickFrequency="3" Maximum="7" Height="18" ValueChanged="sliderThickness_ValueChanged"/>
+            <Label x:Name="labelThicknessValue" HorizontalAlignment="Center" Content="{Binding ElementName=sliderThickness, Path=Value, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Width="26" Height="40" Foreground="White" VerticalContentAlignment="Center"/>
+        </DockPanel>
+        <DockPanel x:Name="dpProperties" LastChildFill="False" VerticalAlignment="Center" Margin="463,700,617.6,10.4" Height="60">
+            <Label HorizontalAlignment="Center" Content="Fill" VerticalAlignment="Center" Width="26" Height="30" Foreground="White" VerticalContentAlignment="Center" Margin="0,0,0,30"/>
+            <xctk:ColorPicker x:Name="ClrPckerFillSelected" Margin="40,5,0,34" RenderTransformOrigin="0.673,-0.653" DockPanel.Dock="Left" Width="41" SelectedColorChanged="ClrPckerSelected_SelectedColorChanged"/>
+            <Label HorizontalAlignment="Center" Content="Border" VerticalAlignment="Center" Width="50" Height="30" Foreground="White" VerticalContentAlignment="Center" Margin="-164,0,0,-30"/>
+            <xctk:ColorPicker x:Name="ClrPckerBorderSelected" Margin="-39,34,0,5" RenderTransformOrigin="0.673,-0.653" DockPanel.Dock="Left" Width="41" SelectedColorChanged="ClrPckerSelected_SelectedColorChanged"/>
+        </DockPanel>
     </Grid>
 </Window>
