@@ -36,7 +36,7 @@ namespace PictureDraw
 //                { "Square", new SquareCreator() },
 //                { "Tetragon", new TetragonCreator() },
 //                { "Triangle", new TriangleCreator() },
-            };        
+            };
 
         public MainWindow()
         {
@@ -51,12 +51,12 @@ namespace PictureDraw
             GlobalProperties.FillSelected = ClrPckerFillSelected;
             GlobalProperties.BorderSelected = ClrPckerBorderSelected;
             ClrPckerFill.SelectedColor = GlobalProperties.ColorFill = Color.FromArgb(255, 100, 100, 100);
-            ClrPckerBorder.SelectedColor = GlobalProperties.ColorStroke = Color.FromArgb(255, 255, 100, 100);            
+            ClrPckerBorder.SelectedColor = GlobalProperties.ColorStroke = Color.FromArgb(255, 255, 100, 100);
         }
 
         private void buttonShape_Click(object sender, RoutedEventArgs e)
         {
-            var button = (Button) sender;
+            var button = (Button)sender;
             GlobalProperties.currentShape = creators[button.Content.ToString()];
         }
 
@@ -78,25 +78,32 @@ namespace PictureDraw
         private void mainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (GlobalProperties.isDraw)
-            {                
+            {
                 var point = e.GetPosition(GlobalProperties.MainCanvas);
                 GlobalProperties.startX = (float)point.X;
-                GlobalProperties.startY = (float)point.Y;                
-                GlobalProperties.MainCanvas.Children.Add(new Rectangle());                
+                GlobalProperties.startY = (float)point.Y;
+                GlobalProperties.MainCanvas.Children.Add(new Rectangle());
             }
             else
             {
-                if (!GlobalProperties.isShapeSelected)
+                if (!GlobalProperties.isAngleSelected)
                 {
-                    if (GlobalProperties.selectedShape != null)
+                    if (!GlobalProperties.isShapeSelected)
                     {
-                        GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape.selection);
-                        GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
+                        if (GlobalProperties.selectedShape != null)
+                        {
+                            GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape.selection);
+                            foreach (var angle in GlobalProperties.AnglesBorder)
+                            {
+                                GlobalProperties.MainCanvas.Children.Remove(angle);
+                            }
+                            GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
+                        }
+                        GlobalProperties.selectedShape = null;
                     }
-                    GlobalProperties.selectedShape = null;
+                    GlobalProperties.isShapeSelected = false;
                 }
-                GlobalProperties.isShapeSelected = false;
-            }                            
+            }
         }
 
         private void mainCanvas_MouseMove(object sender, MouseEventArgs e)
@@ -109,10 +116,10 @@ namespace PictureDraw
                 Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
                     GlobalProperties.startX, GlobalProperties.startY,
                     GlobalProperties.finishX, GlobalProperties.finishY,
-                    GlobalProperties.ColorFill, GlobalProperties.ColorStroke);                
+                    GlobalProperties.ColorFill, GlobalProperties.ColorStroke);
                 GlobalProperties.MainCanvas.Children.RemoveAt(GlobalProperties.MainCanvas.Children.Count - 1);
-                shape.Draw();                
-                GlobalProperties.drawShape = shape;                
+                shape.Draw();
+                GlobalProperties.drawShape = shape;
             }
         }
 
@@ -121,26 +128,27 @@ namespace PictureDraw
             if (GlobalProperties.isDraw)
             {
                 ListShapes.Add(GlobalProperties.drawShape);
+                Debug.WriteLine($"{ListShapes.Count}");
             }
         }
 
         private void buttonSaveLoad_Click(object sender, RoutedEventArgs e)
         {
-            var button = (Button) sender;
+            var button = (Button)sender;
 
             if (button.Equals(buttonSaveImage))
             {
                 Dialogs.SaveFile(ListShapes);
             }
             if (button.Equals(buttonLoadImage))
-            {                              
-                ListShapes = Dialogs.OpenFile();                
-            }                        
+            {
+                ListShapes = Dialogs.OpenFile();
+            }
         }
-   
+
         private void buttonDrawSelect_Click(object sender, RoutedEventArgs e)
         {
-            var button = (Button) sender;
+            var button = (Button)sender;
             if (Equals(button, buttonDraw))
             {
                 GlobalProperties.isDraw = true;
@@ -163,11 +171,13 @@ namespace PictureDraw
                 GlobalProperties.selectedShape.ColorFill = ClrPckerFillSelected.SelectedColor.Value;
                 GlobalProperties.selectedShape.ColorStroke = ClrPckerBorderSelected.SelectedColor.Value;
                 GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);
+                ListShapes.Remove(GlobalProperties.selectedShape);
                 Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
                     GlobalProperties.selectedShape.startX, GlobalProperties.selectedShape.startY,
                     GlobalProperties.selectedShape.finishX, GlobalProperties.selectedShape.finishY,
-                    GlobalProperties.selectedShape.ColorFill, GlobalProperties.selectedShape.ColorStroke);                
+                    GlobalProperties.selectedShape.ColorFill, GlobalProperties.selectedShape.ColorStroke);
                 shape.Draw();
+                ListShapes.Add(GlobalProperties.drawShape);
             }
         }
     }
