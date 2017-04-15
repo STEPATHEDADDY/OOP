@@ -13,17 +13,17 @@
 //    [Serializable]
 //    public class Triangles : Shapes
 //    {
-//        private float X1 { get; set; }
-//        private float Y1 { get; set; }
-//        private float X2 { get; set; }
-//        private float Y2 { get; set; }
-//        private float X3 { get; set; }
-//        private float Y3 { get; set; }
+//        private double X1 { get; set; }
+//        private double Y1 { get; set; }
+//        private double X2 { get; set; }
+//        private double Y2 { get; set; }
+//        private double X3 { get; set; }
+//        private double Y3 { get; set; }
 //
 //        public Triangles() { }
 //    
 //        public Triangles(string Name,
-//            float startX, float startY, float finishX, float finishY): base(Name)
+//            double startX, double startY, double finishX, double finishY): base(Name)
 //        {
 //            //finish not initialize 
 //            this.startX = Math.Min(startX, finishX);
@@ -69,7 +69,7 @@
 //    class TriangleCreator : ICreator
 //    {
 //        public Shapes FactoryMethod(string Name,
-//            float startX, float startY, float finishX, float finishY)
+//            double startX, double startY, double finishX, double finishY)
 //        {
 //            return new Triangles(Name, startX, startY, finishX, finishY);
 //        }

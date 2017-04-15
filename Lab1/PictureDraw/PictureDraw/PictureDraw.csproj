@@ -79,6 +79,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="IEditable.cs" />
+    <Compile Include="IMovable.cs" />
+    <Compile Include="IResizable.cs" />
     <Compile Include="Circles.cs" />
     <Compile Include="Dialogs.cs" />
     <Compile Include="GlobalProperties.cs" />

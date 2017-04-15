@@ -8,26 +8,27 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Xml.Serialization;
 
 namespace PictureDraw
 {       
-    [XmlInclude(typeof(Rectangles))]
+//    [XmlInclude(typeof(Rectangles))]
 //    [XmlInclude(typeof(Circles))]
 //    [XmlInclude(typeof(Triangles))]
-    [XmlInclude(typeof(MatrixTransform))]
+//    [XmlInclude(typeof(MatrixTransform))]
     public abstract class Shapes : UIElement
     {
         public string Name { get; set; }
         public Color ColorFill { get; set; }        
         public Color ColorStroke { get; set; }  
-        public float startX { get; set; } 
-        public float startY { get; set; } 
-        public float finishX { get; set; } 
-        public float finishY { get; set; }         
-        public float Width { get; set; }
-        public float Height { get; set; }
-        public UIElement selection { get; set; }
+        public Point startPoint { get; set; }
+        public Point finishPoint { get; set; }        
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public UIElement Selection { get; set; }
+        public Dictionary<string, Rectangle> AnglesBorder { get; set; }
+        public Point dragPoint { get; set; }                  
 
         public Shapes() { }
 
@@ -35,7 +36,8 @@ namespace PictureDraw
         {                        
             this.ColorFill = ColorFill;            
             this.ColorStroke = ColorStroke;
-            this.Name = Name;            
+            this.Name = Name;
+            Selection = null;
         }
         
         public abstract void Draw();
@@ -45,6 +47,6 @@ namespace PictureDraw
     public interface ICreator
     {
         Shapes FactoryMethod(string Name,
-            float startX, float startY, float finishX, float finishY, Color colorFill, Color colorStroke);
+            Point startPoint, Point finisgPoint, Color colorFill, Color colorStroke);
     }
 }

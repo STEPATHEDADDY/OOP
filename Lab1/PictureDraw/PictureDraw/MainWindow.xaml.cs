@@ -43,95 +43,80 @@ namespace PictureDraw
             InitializeComponent();
             GlobalProperties.MainCanvas = mainCanvas;
             GlobalProperties.RectCanvas = rectMainCanvas;
-            GlobalProperties.selectedShape = null;
-            GlobalProperties.isShapeSelected = false;
+            GlobalProperties.selectedShape = null;            
             GlobalProperties.frameSize = 12;
             GlobalProperties.PropertiesPanel = dpProperties;
             GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
             GlobalProperties.FillSelected = ClrPckerFillSelected;
             GlobalProperties.BorderSelected = ClrPckerBorderSelected;
-            ClrPckerFill.SelectedColor = GlobalProperties.ColorFill = Color.FromArgb(255, 100, 100, 100);
-            ClrPckerBorder.SelectedColor = GlobalProperties.ColorStroke = Color.FromArgb(255, 255, 100, 100);
+            GlobalProperties.MinShapeSize = 30;
+            ClrPckerFill.SelectedColor = Color.FromArgb(255, 100, 100, 100);
+            ClrPckerBorder.SelectedColor = Color.FromArgb(255, 255, 100, 100);
         }
 
         private void buttonShape_Click(object sender, RoutedEventArgs e)
         {
-            var button = (Button)sender;
+            var button = (Button) sender;
             GlobalProperties.currentShape = creators[button.Content.ToString()];
-        }
-
-        private void ClrPcker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
-        {
-            var cp = (ColorPicker)sender;
-            ColorPicker cpFill = ClrPckerFill;
-            ColorPicker cpBorder = ClrPckerBorder;
-            if (Equals(cp, cpFill))
-            {
-                GlobalProperties.ColorFill = cp.SelectedColor.Value;
-            }
-            if (Equals(cp, cpBorder))
-            {
-                GlobalProperties.ColorStroke = cp.SelectedColor.Value;
-            }
         }
 
         private void mainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (GlobalProperties.isDraw)
+            if (GlobalProperties.DrawModeOn)
             {
                 var point = e.GetPosition(GlobalProperties.MainCanvas);
-                GlobalProperties.startX = (float)point.X;
-                GlobalProperties.startY = (float)point.Y;
+                GlobalProperties.startPoint = new Point(point.X, point.Y);                
                 GlobalProperties.MainCanvas.Children.Add(new Rectangle());
-            }
-            else
+            }                       
+    }
+
+        private void rectMainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!GlobalProperties.DrawModeOn)
             {
-                if (!GlobalProperties.isAngleSelected)
+                if (GlobalProperties.selectedShape != null)
                 {
-                    if (!GlobalProperties.isShapeSelected)
+                    GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape.Selection);
+                    var selectableShape = GlobalProperties.selectedShape as ISelectable;
+                    if (selectableShape != null)
                     {
-                        if (GlobalProperties.selectedShape != null)
-                        {
-                            GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape.selection);
-                            foreach (var angle in GlobalProperties.AnglesBorder)
-                            {
-                                GlobalProperties.MainCanvas.Children.Remove(angle);
-                            }
-                            GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
-                        }
-                        GlobalProperties.selectedShape = null;
+                        Rectangles.RemoveSelection(GlobalProperties.selectedShape);
                     }
-                    GlobalProperties.isShapeSelected = false;
+                    GlobalProperties.selectedShape = null;
+                    GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
                 }
             }
         }
 
         private void mainCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && GlobalProperties.isDraw)
+            if (GlobalProperties.DrawModeOn)
             {
-                var point = e.GetPosition(GlobalProperties.MainCanvas);
-                GlobalProperties.finishX = (float)point.X - 1;
-                GlobalProperties.finishY = (float)point.Y - 1;
-                Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
-                    GlobalProperties.startX, GlobalProperties.startY,
-                    GlobalProperties.finishX, GlobalProperties.finishY,
-                    GlobalProperties.ColorFill, GlobalProperties.ColorStroke);
-                GlobalProperties.MainCanvas.Children.RemoveAt(GlobalProperties.MainCanvas.Children.Count - 1);
-                shape.Draw();
-                GlobalProperties.drawShape = shape;
-            }
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    var point = e.GetPosition(GlobalProperties.MainCanvas);
+                    GlobalProperties.finishPoint = new Point(point.X - 1, point.Y - 1);                    
+                    Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
+                        GlobalProperties.startPoint, GlobalProperties.finishPoint,
+                        ClrPckerFill.SelectedColor.Value, ClrPckerBorder.SelectedColor.Value);
+                    GlobalProperties.MainCanvas.Children.RemoveAt(GlobalProperties.MainCanvas.Children.Count - 1);
+                    shape.Draw();                    
+                    GlobalProperties.drawShape = shape;
+                }
+            }            
         }
 
         private void mainCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (GlobalProperties.isDraw)
+            if (GlobalProperties.DrawModeOn)
             {
                 ListShapes.Add(GlobalProperties.drawShape);
-                Debug.WriteLine($"{ListShapes.Count}");
+                ClrPckerFillSelected.SelectedColor = GlobalProperties.drawShape.ColorFill;                
+                ClrPckerBorderSelected.SelectedColor = GlobalProperties.drawShape.ColorStroke;                
             }
         }
 
+        //TODO : REWRITE 
         private void buttonSaveLoad_Click(object sender, RoutedEventArgs e)
         {
             var button = (Button)sender;
@@ -151,34 +136,50 @@ namespace PictureDraw
             var button = (Button)sender;
             if (Equals(button, buttonDraw))
             {
-                GlobalProperties.isDraw = true;
+                GlobalProperties.DrawModeOn = true;
             }
             if (Equals(button, buttonSelect))
             {
-                GlobalProperties.isDraw = false;
+                GlobalProperties.DrawModeOn = false;
             }
         }
 
         private void sliderThickness_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            GlobalProperties.Thickness = (float)sliderThickness.Value;
+            GlobalProperties.Thickness = sliderThickness.Value;
         }
 
         private void ClrPckerSelected_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
         {
-            if (!GlobalProperties.isShapeSelected)
+            if (GlobalProperties.IsColorChanged)
             {
-                GlobalProperties.selectedShape.ColorFill = ClrPckerFillSelected.SelectedColor.Value;
-                GlobalProperties.selectedShape.ColorStroke = ClrPckerBorderSelected.SelectedColor.Value;
-                GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);
-                ListShapes.Remove(GlobalProperties.selectedShape);
-                Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
-                    GlobalProperties.selectedShape.startX, GlobalProperties.selectedShape.startY,
-                    GlobalProperties.selectedShape.finishX, GlobalProperties.selectedShape.finishY,
-                    GlobalProperties.selectedShape.ColorFill, GlobalProperties.selectedShape.ColorStroke);
-                shape.Draw();
-                ListShapes.Add(GlobalProperties.drawShape);
+                if (GlobalProperties.selectedShape != null)
+                {
+                    GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);                    
+                    ListShapes.Remove(GlobalProperties.selectedShape);
+                    Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
+                        GlobalProperties.selectedShape.startPoint, GlobalProperties.selectedShape.finishPoint,
+                        ClrPckerFillSelected.SelectedColor.Value, ClrPckerBorderSelected.SelectedColor.Value);
+                    shape.Draw();
+                    //TODO : INITIALIZE FIELDS WHEN THE PROGRAM IS BEING STARTED
+                    shape.dragPoint = new Point(Double.NaN, Double.NaN);  
+                    shape.Selection = GlobalProperties.selectedShape.Selection;
+                    shape.AnglesBorder = GlobalProperties.selectedShape.AnglesBorder;
+                    GlobalProperties.drawShape = shape;                                                                             
+                    GlobalProperties.selectedShape = shape;
+                    ListShapes.Add(shape);
+                }                
             }
+        }
+
+        private void ClrPckerFillSelected_Opened(object sender, RoutedEventArgs e)
+        {
+            GlobalProperties.IsColorChanged = true;
+        }
+
+        private void ClrPckerFillSelected_Closed(object sender, RoutedEventArgs e)
+        {
+            GlobalProperties.IsColorChanged = false;
         }
     }
 }

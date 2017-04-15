@@ -14,12 +14,12 @@
 //    [Serializable]
 //    public class Circles : Shapes
 //    {
-//        public float Radius { get; set; }
+//        public double Radius { get; set; }
 //
 //        public Circles() { }
 //
 //        public Circles(string Name,
-//            float startX, float startY, float finishX, float finishY): base(
+//            double startX, double startY, double finishX, double finishY): base(
 //                Name)
 //        {
 //            //finish not initialize 
@@ -48,7 +48,7 @@
 //    class CircleCreator : ICreator
 //    {
 //        public Shapes FactoryMethod(string Name,
-//            float startX, float startY, float finishX, float finishY)
+//            double startX, double startY, double finishX, double finishY)
 //        {
 //            return new Circles(Name, startX, startY, finishX, finishY);
 //        }

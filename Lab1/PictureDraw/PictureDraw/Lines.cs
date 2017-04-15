@@ -15,7 +15,7 @@
 //        public Lines() { }
 //
 //        public Lines(string Name,
-//            float startX, float startY, float finishX, float finishY): base(
+//            double startX, double startY, double finishX, double finishY): base(
 //                Name)
 //        {
 //            this.startX = startX;
@@ -42,7 +42,7 @@
 //    class LineCreator : ICreator
 //    {
 //        public Shapes FactoryMethod(string Name,
-//            float startX, float startY, float finishX, float finishY)
+//            double startX, double startY, double finishX, double finishY)
 //        {
 //            return new Lines(Name, startX, startY, finishX, finishY);
 //        }

@@ -17,7 +17,7 @@
 //        public Squares() { }
 //
 //        public Squares(string Name,
-//            float startX, float startY, float finishX, float finishY): base(
+//            double startX, double startY, double finishX, double finishY): base(
 //                Name)
 //        {
 //            //finish not initialize 
@@ -45,7 +45,7 @@
 //    class SquareCreator : ICreator
 //    {
 //        public Shapes FactoryMethod(string Name,
-//            float startX, float startY, float finishX, float finishY)
+//            double startX, double startY, double finishX, double finishY)
 //        {
 //            return new Squares(Name, startX, startY, finishX, finishY);
 //        }
