@@ -31,7 +31,10 @@ namespace PictureDraw
             Height = this.finishPoint.Y - this.startPoint.Y;
             MouseDown += SelectShape;
             MouseDown += SetDragPoint;
-            MouseDown += ShowProperties;
+            if (CommonMethods.CheckType(this, typeof (IEditable)))
+            {
+                MouseDown += ShowProperties;
+            }
             MouseMove += MovingShape;
             MouseUp += StopMovingShape;
         }
@@ -53,13 +56,13 @@ namespace PictureDraw
                     RemoveSelection(GlobalProperties.selectedShape);
                 }                                               
                 rect.Selection = GetFocusFrame(rect, GlobalProperties.frameSize);                
-                GlobalProperties.selectedShape = rect;                    
+                GlobalProperties.selectedShape = rect;
+                GlobalProperties.drawShape = rect;                    
                 rect.AnglesBorder = GetFocusAngles(rect, GlobalProperties.frameSize);
-                var IsResizable = rect as IResizable;
-                if (IsResizable != null)
+                if (CommonMethods.CheckType(rect, typeof(IResizable)))
                 {
                     SetAnglesAction(rect);
-                }                               
+                }
             }
         }
 
@@ -67,6 +70,7 @@ namespace PictureDraw
         {            
             GlobalProperties.MainCanvas.Children.Remove(shape.Selection);
             shape.Selection = null;
+            GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;           
             //TODO : MAYBE NEED TO REWRITE
             foreach (var angle in shape.AnglesBorder.Values)
             {
@@ -88,6 +92,36 @@ namespace PictureDraw
             return focus;
         }
 
+        public Dictionary<string, Rectangle> GetFocusAngles(Shapes shape, double frameSize)
+        {
+            const double SIZE_ANGLES = 6;
+            var leftTopPoint = new Point(shape.startPoint.X - (frameSize + SIZE_ANGLES) / 2, shape.startPoint.Y - (frameSize + SIZE_ANGLES) / 2);
+            var rightBottomPoint = new Point(shape.startPoint.X + shape.Width + SIZE_ANGLES / 2, shape.startPoint.Y + shape.Height + SIZE_ANGLES / 2);
+            var rightTopPoint = new Point(rightBottomPoint.X, leftTopPoint.Y);
+            var leftBottomPoint = new Point(leftTopPoint.X, rightBottomPoint.Y);
+            var leftTopAngle = GetAngle(leftTopPoint, SIZE_ANGLES);
+            var rightTopAngle = GetAngle(rightTopPoint, SIZE_ANGLES);
+            var rightBottomAngle = GetAngle(rightBottomPoint, SIZE_ANGLES);
+            var leftBottomAngle = GetAngle(leftBottomPoint, SIZE_ANGLES);
+            var result = new Dictionary<string, Rectangle>
+            {
+                {"leftTop", leftTopAngle },
+                {"rightTop", rightTopAngle },
+                {"rightBottom", rightBottomAngle },
+                {"leftBottom", leftBottomAngle }
+            };
+            return result;
+        }
+
+        private Rectangle GetAngle(Point position, double size)
+        {
+            var angle = new Rectangle { Width = size, Height = size, Fill = Brushes.Black };
+            GlobalProperties.MainCanvas.Children.Add(angle);
+            Canvas.SetLeft(angle, position.X);
+            Canvas.SetTop(angle, position.Y);
+            return angle;
+        }
+
         public void SetDragPoint(object sender, MouseEventArgs e)
         {
             var rect = (Rectangles) sender;            
@@ -101,13 +135,16 @@ namespace PictureDraw
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                var rect = (Rectangles)GlobalProperties.selectedShape;
-                if (e.LeftButton == MouseButtonState.Pressed && !Double.IsNaN(rect.dragPoint.X))
+                if (e.LeftButton == MouseButtonState.Pressed && CommonMethods.CheckType(GlobalProperties.selectedShape, typeof(Rectangles)))
                 {
-                    var currentMousePosition = e.GetPosition(GlobalProperties.MainCanvas);
-                    var offset = new Point(rect.startPoint.X + (currentMousePosition.X - rect.dragPoint.X),
-                        rect.startPoint.Y + (currentMousePosition.Y - rect.dragPoint.Y));
-                    ChangePosition(offset, rect, GlobalProperties.frameSize, currentMousePosition);
+                    var rect = (Rectangles)GlobalProperties.selectedShape;
+                    if (!Double.IsNaN(rect.dragPoint.X))
+                    {
+                        var currentMousePosition = e.GetPosition(GlobalProperties.MainCanvas);
+                        var offset = new Point(rect.startPoint.X + (currentMousePosition.X - rect.dragPoint.X),
+                            rect.startPoint.Y + (currentMousePosition.Y - rect.dragPoint.Y));
+                        ChangePosition(offset, rect, GlobalProperties.frameSize, currentMousePosition);
+                    }
                 }
             }                     
         }
@@ -149,39 +186,7 @@ namespace PictureDraw
             GlobalProperties.PropertiesPanel.Visibility = Visibility.Visible;
             GlobalProperties.FillSelected.SelectedColor = rect.ColorFill;
             GlobalProperties.BorderSelected.SelectedColor = rect.ColorStroke;
-        }
-
-
-
-        public Dictionary<string, Rectangle> GetFocusAngles(Shapes shape, double frameSize)
-        {            
-            const double SIZE_ANGLES = 6;
-            var leftTopPoint = new Point(shape.startPoint.X - (frameSize + SIZE_ANGLES) / 2, shape.startPoint.Y - (frameSize + SIZE_ANGLES) / 2);
-            var rightBottomPoint = new Point(shape.startPoint.X + shape.Width + SIZE_ANGLES / 2, shape.startPoint.Y + shape.Height + SIZE_ANGLES / 2);
-            var rightTopPoint = new Point(rightBottomPoint.X, leftTopPoint.Y);
-            var leftBottomPoint = new Point(leftTopPoint.X, rightBottomPoint.Y);
-            var leftTopAngle = GetAngle(leftTopPoint, SIZE_ANGLES);           
-            var rightTopAngle = GetAngle(rightTopPoint, SIZE_ANGLES);
-            var rightBottomAngle = GetAngle(rightBottomPoint, SIZE_ANGLES);
-            var leftBottomAngle = GetAngle(leftBottomPoint, SIZE_ANGLES);
-            var result = new Dictionary<string, Rectangle>
-            {
-                {"leftTop", leftTopAngle },
-                {"rightTop", rightTopAngle },
-                {"rightBottom", rightBottomAngle },
-                {"leftBottom", leftBottomAngle }
-            };
-            return result;
-        }
-
-        private Rectangle GetAngle(Point position, double size)
-        {
-            var angle = new Rectangle { Width = size, Height = size, Fill = Brushes.Black };
-            GlobalProperties.MainCanvas.Children.Add(angle);
-            Canvas.SetLeft(angle, position.X);
-            Canvas.SetTop(angle, position.Y);
-            return angle;
-        }
+        } 
 
         public void SetAnglesAction(Shapes rect)
         {
@@ -240,6 +245,8 @@ namespace PictureDraw
 
         private void RecreateShape(MouseEventArgs e)
         {
+            var type = GlobalProperties.selectedShape.GetType().Name;
+            GlobalProperties.currentShape = CommonMethods.creators[type];
             GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);
             RemoveSelection(GlobalProperties.selectedShape);
             Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",

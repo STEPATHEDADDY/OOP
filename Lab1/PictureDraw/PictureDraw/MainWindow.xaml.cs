@@ -28,15 +28,15 @@ namespace PictureDraw
     public partial class MainWindow : Window
     {
         public List<Shapes> ListShapes = new List<Shapes>();
-        private Dictionary<string, ICreator> creators = new Dictionary<string, ICreator>
-            {
-//                { "Circle", new CircleCreator() },
-//                { "Line", new LineCreator() },
-                { "Rectangle", new RectangleCreator() },
-//                { "Square", new SquareCreator() },
-//                { "Tetragon", new TetragonCreator() },
-//                { "Triangle", new TriangleCreator() },
-            };
+//        private Dictionary<string, ICreator> creators= new Dictionary<string, ICreator>
+//            {
+//                { "Circles", new CircleCreator() },
+////                { "Line", new LineCreator() },
+//                { "Rectangles", new RectangleCreator() },
+////                { "Square", new SquareCreator() },
+////                { "Tetragon", new TetragonCreator() },
+////                { "Triangle", new TriangleCreator() },
+//            };
 
         public MainWindow()
         {
@@ -57,7 +57,7 @@ namespace PictureDraw
         private void buttonShape_Click(object sender, RoutedEventArgs e)
         {
             var button = (Button) sender;
-            GlobalProperties.currentShape = creators[button.Content.ToString()];
+            GlobalProperties.currentShape = CommonMethods.creators[button.Content.ToString()];
         }
 
         private void mainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -110,9 +110,10 @@ namespace PictureDraw
         {
             if (GlobalProperties.DrawModeOn)
             {
-                ListShapes.Add(GlobalProperties.drawShape);
+                ListShapes.Add(GlobalProperties.drawShape);       
+                Debug.WriteLine(ListShapes.Count);
                 ClrPckerFillSelected.SelectedColor = GlobalProperties.drawShape.ColorFill;                
-                ClrPckerBorderSelected.SelectedColor = GlobalProperties.drawShape.ColorStroke;                
+                ClrPckerBorderSelected.SelectedColor = GlobalProperties.drawShape.ColorStroke;                                
             }
         }
 
@@ -155,6 +156,8 @@ namespace PictureDraw
             {
                 if (GlobalProperties.selectedShape != null)
                 {
+                    var type = GlobalProperties.selectedShape.GetType().Name;
+                    GlobalProperties.currentShape = CommonMethods.creators[type];
                     GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);                    
                     ListShapes.Remove(GlobalProperties.selectedShape);
                     Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",

@@ -12,6 +12,7 @@ namespace PictureDraw
     public interface IResizable
     {
         void SetResizeAngle(object sender, MouseEventArgs e);
+        void SetAnglesAction(Shapes rect);
         void StopResizeShape(object sender, MouseEventArgs e);        
     }
 }
