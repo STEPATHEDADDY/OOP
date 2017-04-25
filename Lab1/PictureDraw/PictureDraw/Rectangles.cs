@@ -6,13 +6,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using YAXLib;
 
 namespace PictureDraw
 {
-    [Serializable]
     public class Rectangles : Shapes, ISelectable, IMovable, IResizable, IEditable
     {
-        private Rectangles() { }
+        public Rectangles() { }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
@@ -21,6 +21,12 @@ namespace PictureDraw
             drawingContext.DrawRectangle(new SolidColorBrush(ColorFill),
                 new Pen(new SolidColorBrush(ColorStroke), ThicknessBorder),
                 new Rect(0, 0, Width, Height));
+        }
+
+        public override void AfterDesirialization()
+        {
+            MouseDown += SelectShape;
+            MouseDown += SetDragPoint;
         }
 
         public Rectangles(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
@@ -299,9 +305,10 @@ namespace PictureDraw
             SetAnglesAction(shape);
             //TODO : MAKE ALL FIELDS AS WHEN WE CHANGING COLORS
             shape.dragPoint = new Point(Double.NaN, Double.NaN);
+            GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
             GlobalProperties.selectedShape = shape;
             GlobalProperties.selectedAnglePoint = new Point(e.GetPosition(GlobalProperties.MainCanvas).X, e.GetPosition(GlobalProperties.MainCanvas).Y);
-
+            GlobalProperties.ShapesList.AllShapes.Add(GlobalProperties.selectedShape);
         }
 
         private static Point GetOffset(MouseEventArgs e)

@@ -9,18 +9,28 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using YAXLib;
 
 namespace PictureDraw
 {
-    [Serializable]
     public class Lines : Shapes, ISelectable, IMovable, IResizable, IEditable
     {
+        [YAXSerializableField]    
         private double X1 { get; set; }
+        [YAXSerializableField]
         private double Y1 { get; set; }
+        [YAXSerializableField]
         private double X2 { get; set; }
+        [YAXSerializableField]
         private double Y2 { get; set; }
 
         public Lines() { }
+
+        public override void AfterDesirialization()
+        {
+            MouseDown += SelectShape;
+            MouseDown += SetDragPoint;
+        }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
@@ -324,9 +334,10 @@ namespace PictureDraw
             SetAnglesAction(shape);
             //TODO : MAKE ALL FIELDS AS WHEN WE CHANGING COLORS
             shape.dragPoint = new Point(Double.NaN, Double.NaN);
+            GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
             GlobalProperties.selectedShape = shape;
             GlobalProperties.selectedAnglePoint = new Point(e.GetPosition(GlobalProperties.MainCanvas).X, e.GetPosition(GlobalProperties.MainCanvas).Y);
-
+            GlobalProperties.ShapesList.AllShapes.Add(GlobalProperties.selectedShape);
         }
 
         private static Point GetOffset(MouseEventArgs e)

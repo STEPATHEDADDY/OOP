@@ -12,12 +12,16 @@ using System.Windows.Shapes;
 using System.Xml.Serialization;
 
 namespace PictureDraw
-{
-    [XmlInclude(typeof(Shapes))]
-    [Serializable]
+{    
     public class Squares : Shapes, ISelectable, IMovable, IResizable, IEditable
     {
         public Squares() { }
+
+        public override void AfterDesirialization()
+        {
+            MouseDown += SelectShape;
+            MouseDown += SetDragPoint;
+        }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
@@ -366,8 +370,10 @@ namespace PictureDraw
             SetAnglesAction(shape);
             //TODO : MAKE ALL FIELDS AS WHEN WE CHANGING COLORS
             shape.dragPoint = new Point(Double.NaN, Double.NaN);
+            GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
             GlobalProperties.selectedShape = shape;
             GlobalProperties.selectedAnglePoint = new Point(e.GetPosition(GlobalProperties.MainCanvas).X, e.GetPosition(GlobalProperties.MainCanvas).Y);
+            GlobalProperties.ShapesList.AllShapes.Add(GlobalProperties.selectedShape);
         }
 
         private static Point GetOffset(MouseEventArgs e)

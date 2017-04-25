@@ -27,7 +27,7 @@ namespace PictureDraw
     /// </summary>    
     public partial class MainWindow : Window
     {
-        public List<Shapes> ListShapes = new List<Shapes>();
+//        public List<Shapes> ListShapes = new List<Shapes>();
 //        private Dictionary<string, ICreator> creators= new Dictionary<string, ICreator>
 //            {
 //                { "Circles", new CircleCreator() },
@@ -41,6 +41,7 @@ namespace PictureDraw
         public MainWindow()
         {
             InitializeComponent();
+            GlobalProperties.ShapesList = new ListShapes();
             GlobalProperties.MainCanvas = mainCanvas;
             GlobalProperties.RectCanvas = rectMainCanvas;
             GlobalProperties.selectedShape = null;            
@@ -95,7 +96,7 @@ namespace PictureDraw
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
                     var point = e.GetPosition(GlobalProperties.MainCanvas);
-                    GlobalProperties.finishPoint = new Point(point.X - 1, point.Y - 1);                    
+                    GlobalProperties.finishPoint = new Point(point.X - 6, point.Y - 6);                    
                     Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
                         GlobalProperties.startPoint, GlobalProperties.finishPoint,
                         ClrPckerFill.SelectedColor.Value, ClrPckerBorder.SelectedColor.Value,
@@ -111,8 +112,9 @@ namespace PictureDraw
         {
             if (GlobalProperties.DrawModeOn)
             {
-                ListShapes.Add(GlobalProperties.drawShape);       
-                Debug.WriteLine(ListShapes.Count);
+                GlobalProperties.ShapesList.AddShape(GlobalProperties.drawShape);
+//                ListShapes.Add();       
+                Debug.WriteLine(GlobalProperties.ShapesList.AllShapes.Count);
                 ClrPckerFillSelected.SelectedColor = GlobalProperties.drawShape.ColorFill;                
                 ClrPckerBorderSelected.SelectedColor = GlobalProperties.drawShape.ColorStroke;                                
             }
@@ -125,11 +127,11 @@ namespace PictureDraw
 
             if (button.Equals(buttonSaveImage))
             {
-                Dialogs.SaveFile(ListShapes);
+                Dialogs.SaveFile(GlobalProperties.ShapesList);
             }
             if (button.Equals(buttonLoadImage))
             {
-//                ListShapes = Dialogs.OpenFile();
+                GlobalProperties.ShapesList = Dialogs.OpenFile();
             }
         }
 
@@ -159,8 +161,8 @@ namespace PictureDraw
                 {
                     var type = GlobalProperties.selectedShape.GetType().Name;
                     GlobalProperties.currentShape = CommonMethods.creators[type];
-                    GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);                    
-                    ListShapes.Remove(GlobalProperties.selectedShape);
+                    GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);
+                    GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
                     Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
                         GlobalProperties.selectedShape.startPoint, GlobalProperties.selectedShape.finishPoint,
                         ClrPckerFillSelected.SelectedColor.Value, ClrPckerBorderSelected.SelectedColor.Value,
@@ -172,7 +174,7 @@ namespace PictureDraw
                     shape.AnglesBorder = GlobalProperties.selectedShape.AnglesBorder;
                     GlobalProperties.drawShape = shape;                                                                             
                     GlobalProperties.selectedShape = shape;
-                    ListShapes.Add(shape);
+                    GlobalProperties.ShapesList.AllShapes.Add(shape);
                 }                
             }
         }

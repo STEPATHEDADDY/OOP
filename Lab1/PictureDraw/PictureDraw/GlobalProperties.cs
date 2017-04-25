@@ -31,6 +31,7 @@ namespace PictureDraw
         public static Rectangle ResizeCanvas { get; set; }
         public static Canvas SecondaryCanvas { get; set; }
         public static Rectangle selectedAngle { get; set; }        
+        public static ListShapes ShapesList { get; set; }
         public static Point selectedShapePoint { get; set; }
         public static Point selectedAnglePoint { get; set; }
         public static Rectangle RectCanvas { get; set; }

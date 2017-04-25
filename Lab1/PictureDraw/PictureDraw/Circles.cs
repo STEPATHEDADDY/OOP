@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,15 +11,22 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
+using YAXLib;
 
 namespace PictureDraw
 {    
-    [Serializable]
     public class Circles : Shapes, ISelectable, IMovable, IResizable, IEditable
     {
+        [YAXSerializableField]
         public double Radius { get; set; }
 
-        private Circles() { }
+        public Circles() { }
+
+        public override void AfterDesirialization()
+        {
+            MouseDown += SelectShape;
+            MouseDown += SetDragPoint;
+        }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
@@ -231,7 +239,6 @@ namespace PictureDraw
                 mousePosition.Y);
         }
 
-        //TODO : ADD NEW SHAPE TO LIST
         public void StopMovingShape(object sender, MouseEventArgs e)
         {
             if (!GlobalProperties.DrawModeOn)
@@ -241,6 +248,8 @@ namespace PictureDraw
                         GlobalProperties.selectedShape.Width, GlobalProperties.selectedShape.startPoint.Y + GlobalProperties.selectedShape.Height);
                 GlobalProperties.SecondaryCanvas.Children.Remove(GlobalProperties.ResizeCanvas);
                 GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.SecondaryCanvas);
+//                GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
+//                GlobalProperties.ShapesList.AllShapes.Add(GlobalProperties.selectedShape);
             }
         }
 
@@ -371,8 +380,10 @@ namespace PictureDraw
             SetAnglesAction(shape);
             //TODO : MAKE ALL FIELDS AS WHEN WE CHANGING COLORS
             shape.dragPoint = new Point(Double.NaN, Double.NaN);
+            GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
             GlobalProperties.selectedShape = shape;
-            GlobalProperties.selectedAnglePoint = new Point(e.GetPosition(GlobalProperties.MainCanvas).X, e.GetPosition(GlobalProperties.MainCanvas).Y);            
+            GlobalProperties.selectedAnglePoint = new Point(e.GetPosition(GlobalProperties.MainCanvas).X, e.GetPosition(GlobalProperties.MainCanvas).Y);      
+            GlobalProperties.ShapesList.AllShapes.Add(GlobalProperties.selectedShape);
         }
 
         private static Point GetOffset(MouseEventArgs e)

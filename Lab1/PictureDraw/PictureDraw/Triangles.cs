@@ -8,20 +8,32 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using YAXLib;
 
 namespace PictureDraw
 {
-    [Serializable]
     public class Triangles : Shapes, ISelectable, IMovable, IResizable, IEditable
     {
-        private double X1 { get; set; }
-        private double Y1 { get; set; }
-        private double X2 { get; set; }
-        private double Y2 { get; set; }
-        private double X3 { get; set; }
-        private double Y3 { get; set; }
+        [YAXSerializableField]   
+        public double X1 { get; set; }
+        [YAXSerializableField]
+        public double Y1 { get; set; }
+        [YAXSerializableField]
+        public double X2 { get; set; }
+        [YAXSerializableField]
+        public double Y2 { get; set; }
+        [YAXSerializableField]
+        public double X3 { get; set; }
+        [YAXSerializableField]
+        public double Y3 { get; set; }
 
-        private Triangles() { }
+        public Triangles() { }
+
+        public override void AfterDesirialization()
+        {
+            MouseDown += SelectShape;
+            MouseDown += SetDragPoint;
+        }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
@@ -315,9 +327,10 @@ namespace PictureDraw
             SetAnglesAction(shape);
             //TODO : MAKE ALL FIELDS AS WHEN WE CHANGING COLORS
             shape.dragPoint = new Point(Double.NaN, Double.NaN);
+            GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
             GlobalProperties.selectedShape = shape;
             GlobalProperties.selectedAnglePoint = new Point(e.GetPosition(GlobalProperties.MainCanvas).X, e.GetPosition(GlobalProperties.MainCanvas).Y);
-
+            GlobalProperties.ShapesList.AllShapes.Add(GlobalProperties.selectedShape);
         }
 
         private static Point GetOffset(MouseEventArgs e)
