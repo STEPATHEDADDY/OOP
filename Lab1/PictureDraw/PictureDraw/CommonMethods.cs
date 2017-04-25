@@ -11,10 +11,10 @@ namespace PictureDraw
         public static Dictionary<string, ICreator> creators = new Dictionary<string, ICreator>
             {
                 { "Circles", new CircleCreator() },
-//                { "Line", new LineCreator() },
+                { "Lines", new LineCreator() },
                 { "Rectangles", new RectangleCreator() },
-//                { "Square", new SquareCreator() },
-//                { "Tetragon", new TetragonCreator() },
+                { "Squares", new SquareCreator() },
+                { "Tetragons", new TetragonCreator() },
                 { "Triangles", new TriangleCreator() },
             };
 

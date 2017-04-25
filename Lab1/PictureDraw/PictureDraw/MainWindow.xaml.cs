@@ -98,7 +98,8 @@ namespace PictureDraw
                     GlobalProperties.finishPoint = new Point(point.X - 1, point.Y - 1);                    
                     Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
                         GlobalProperties.startPoint, GlobalProperties.finishPoint,
-                        ClrPckerFill.SelectedColor.Value, ClrPckerBorder.SelectedColor.Value);
+                        ClrPckerFill.SelectedColor.Value, ClrPckerBorder.SelectedColor.Value,
+                        sliderThickness.Value);
                     GlobalProperties.MainCanvas.Children.RemoveAt(GlobalProperties.MainCanvas.Children.Count - 1);
                     shape.Draw();                    
                     GlobalProperties.drawShape = shape;
@@ -128,7 +129,7 @@ namespace PictureDraw
             }
             if (button.Equals(buttonLoadImage))
             {
-                ListShapes = Dialogs.OpenFile();
+//                ListShapes = Dialogs.OpenFile();
             }
         }
 
@@ -162,7 +163,8 @@ namespace PictureDraw
                     ListShapes.Remove(GlobalProperties.selectedShape);
                     Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
                         GlobalProperties.selectedShape.startPoint, GlobalProperties.selectedShape.finishPoint,
-                        ClrPckerFillSelected.SelectedColor.Value, ClrPckerBorderSelected.SelectedColor.Value);
+                        ClrPckerFillSelected.SelectedColor.Value, ClrPckerBorderSelected.SelectedColor.Value,
+                        sliderThickness.Value);
                     shape.Draw();
                     //TODO : INITIALIZE FIELDS WHEN THE PROGRAM IS BEING STARTED
                     shape.dragPoint = new Point(Double.NaN, Double.NaN);  
