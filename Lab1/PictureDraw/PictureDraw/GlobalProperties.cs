@@ -28,11 +28,9 @@ namespace PictureDraw
         public static bool DrawModeOn { get; set; }
         public static Shapes drawShape { get; set; }
         public static double MinShapeSize { get; set; }        
-        public static Rectangle ResizeCanvas { get; set; }
-        public static Canvas SecondaryCanvas { get; set; }
+        public static double Opacity { get; set; }        
         public static Rectangle selectedAngle { get; set; }        
         public static ListShapes ShapesList { get; set; }
-        public static Point selectedShapePoint { get; set; }
         public static Point selectedAnglePoint { get; set; }
         public static Rectangle RectCanvas { get; set; }
         public static double frameSize { get; set; }

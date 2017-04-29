@@ -27,20 +27,10 @@ namespace PictureDraw
     /// </summary>    
     public partial class MainWindow : Window
     {
-//        public List<Shapes> ListShapes = new List<Shapes>();
-//        private Dictionary<string, ICreator> creators= new Dictionary<string, ICreator>
-//            {
-//                { "Circles", new CircleCreator() },
-////                { "Line", new LineCreator() },
-//                { "Rectangles", new RectangleCreator() },
-////                { "Square", new SquareCreator() },
-////                { "Tetragon", new TetragonCreator() },
-////                { "Triangle", new TriangleCreator() },
-//            };
-
         public MainWindow()
         {
             InitializeComponent();
+            GlobalProperties.Opacity = 0.7;
             GlobalProperties.ShapesList = new ListShapes();
             GlobalProperties.MainCanvas = mainCanvas;
             GlobalProperties.RectCanvas = rectMainCanvas;
@@ -69,7 +59,7 @@ namespace PictureDraw
                 GlobalProperties.startPoint = new Point(point.X, point.Y);                
                 GlobalProperties.MainCanvas.Children.Add(new Rectangle());
             }                       
-    }
+        }
 
         private void rectMainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -97,7 +87,7 @@ namespace PictureDraw
                 {
                     var point = e.GetPosition(GlobalProperties.MainCanvas);
                     GlobalProperties.finishPoint = new Point(point.X - 6, point.Y - 6);                    
-                    Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
+                    Shapes shape = GlobalProperties.currentShape.Create("Default",
                         GlobalProperties.startPoint, GlobalProperties.finishPoint,
                         ClrPckerFill.SelectedColor.Value, ClrPckerBorder.SelectedColor.Value,
                         sliderThickness.Value);
@@ -113,25 +103,26 @@ namespace PictureDraw
             if (GlobalProperties.DrawModeOn)
             {
                 GlobalProperties.ShapesList.AddShape(GlobalProperties.drawShape);
-//                ListShapes.Add();       
                 Debug.WriteLine(GlobalProperties.ShapesList.AllShapes.Count);
                 ClrPckerFillSelected.SelectedColor = GlobalProperties.drawShape.ColorFill;                
                 ClrPckerBorderSelected.SelectedColor = GlobalProperties.drawShape.ColorStroke;                                
             }
         }
 
-        //TODO : REWRITE 
         private void buttonSaveLoad_Click(object sender, RoutedEventArgs e)
         {
             var button = (Button)sender;
-
             if (button.Equals(buttonSaveImage))
             {
                 Dialogs.SaveFile(GlobalProperties.ShapesList);
             }
-            if (button.Equals(buttonLoadImage))
+            else if (button.Equals(buttonLoadImage))
             {
-                GlobalProperties.ShapesList = Dialogs.OpenFile();
+                var tempListShapes = Dialogs.OpenFile();
+                if (tempListShapes != null)
+                {
+                    GlobalProperties.ShapesList = tempListShapes;
+                }                
             }
         }
 
@@ -142,7 +133,7 @@ namespace PictureDraw
             {
                 GlobalProperties.DrawModeOn = true;
             }
-            if (Equals(button, buttonSelect))
+            else if (Equals(button, buttonSelect))
             {
                 GlobalProperties.DrawModeOn = false;
             }
@@ -159,22 +150,9 @@ namespace PictureDraw
             {
                 if (GlobalProperties.selectedShape != null)
                 {
-                    var type = GlobalProperties.selectedShape.GetType().Name;
-                    GlobalProperties.currentShape = CommonMethods.creators[type];
-                    GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);
-                    GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
-                    Shapes shape = GlobalProperties.currentShape.FactoryMethod("Default",
-                        GlobalProperties.selectedShape.startPoint, GlobalProperties.selectedShape.finishPoint,
-                        ClrPckerFillSelected.SelectedColor.Value, ClrPckerBorderSelected.SelectedColor.Value,
-                        sliderThickness.Value);
-                    shape.Draw();
-                    //TODO : INITIALIZE FIELDS WHEN THE PROGRAM IS BEING STARTED
-                    shape.dragPoint = new Point(Double.NaN, Double.NaN);  
-                    shape.Selection = GlobalProperties.selectedShape.Selection;
-                    shape.AnglesBorder = GlobalProperties.selectedShape.AnglesBorder;
-                    GlobalProperties.drawShape = shape;                                                                             
-                    GlobalProperties.selectedShape = shape;
-                    GlobalProperties.ShapesList.AllShapes.Add(shape);
+                    GlobalProperties.selectedShape.ColorFill = ClrPckerFillSelected.SelectedColor.Value;
+                    GlobalProperties.selectedShape.ColorStroke = ClrPckerBorderSelected.SelectedColor.Value;
+                    var shape = GlobalProperties.selectedShape.RecreateShape();                    
                 }                
             }
         }

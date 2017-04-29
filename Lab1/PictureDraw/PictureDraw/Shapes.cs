@@ -54,13 +54,14 @@ namespace PictureDraw
         }
         
         public abstract void Draw();
-        public abstract void AfterDesirialization();
+        public abstract void SetEvents();
+        public abstract Shapes RecreateShape();
 
     }
 
     public interface ICreator
     {
-        Shapes FactoryMethod(string Name,
+        Shapes Create(string Name,
             Point startPoint, Point finisgPoint, Color colorFill, Color colorStroke, double ThicknessBorder);
     }
 }
