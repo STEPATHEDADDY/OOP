@@ -11,6 +11,10 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media;
+using Xceed.Wpf.Toolkit;
+using Xceed.Wpf.Toolkit.Core.Converters;
+using MessageBox = Xceed.Wpf.Toolkit.MessageBox;
+
 
 namespace PictureDraw
 {
@@ -20,30 +24,42 @@ namespace PictureDraw
         public List<Assembly> modules { get; set; }
 
 
-        public Dictionary<string, ICreator> getCreatorsNames(MainWindow mainInstance, List<ICreator> creators)
+        public Dictionary<string, ICreator> getCreatorsNames(MainWindow mainInstance, 
+            ref Dictionary<Type, ICreator> creators)
         {
             Dictionary<string, ICreator> result = new Dictionary<string, ICreator>();
             var topMargin = 10.0;
-            foreach (var creator in creators)
+            var workDict = creators.ToDictionary(entry => entry.Key,
+                                               entry => entry.Value);
+            foreach (var creator in creators.Keys)
             {
-                var name = creator.ToString();
-                result[name] = creator;
-                Button myButton = new Button
+                var name = creators[creator].ToString();
+                result[name] = creators[creator];
+                try
                 {
-                    Name = name,
-                    Content = name,
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    Margin = new Thickness(10, topMargin, 0, 0),
-                    VerticalAlignment = VerticalAlignment.Top,
-                    Width = 112,
-                    Foreground = Brushes.White,
-                    BorderBrush = Brushes.White,
-                    Background = new SolidColorBrush(Color.FromRgb(11, 0, 41))                    
-                };
-                myButton.Click += mainInstance.buttonShape_Click;
-                GlobalProperties.MainGrid.Children.Add(myButton);
-                topMargin += 24;
+                    Button myButton = new Button
+                    {
+                        Name = name,
+                        Content = name,
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        Margin = new Thickness(10, topMargin, 0, 0),
+                        VerticalAlignment = VerticalAlignment.Top,
+                        Width = 112,
+                        Foreground = Brushes.White,
+                        BorderBrush = Brushes.White,
+                        Background = new SolidColorBrush(Color.FromRgb(11, 0, 41))
+                    };
+                    myButton.Click += mainInstance.buttonShape_Click;
+                    GlobalProperties.MainGrid.Children.Add(myButton);
+                    topMargin += 24;
+                }
+                catch
+                {
+                    result.Remove(name);
+                    workDict.Remove(creator);
+                }                
             }
+            creators = workDict;
             return result;
         }
 
@@ -77,13 +93,20 @@ namespace PictureDraw
         {
 //            TODO: WORK PATH BELOW
             rootPath = @"D:\OOP\OOP\Lab1\PictureDraw\Modules";
-            modules = new List<Assembly>();            
+            modules = new List<Assembly>();
             var directory = new DirectoryInfo(rootPath);
-
             foreach (var file in directory.GetFiles("*.dll"))
             {
-                modules.Add(Assembly.LoadFrom(file.FullName));
-            }         
+                try
+                {
+                    modules.Add(Assembly.LoadFrom(file.FullName));
+                }
+                catch
+                {                    
+                    MessageBox.Show($@"Sorry, but {rootPath}\{file} was damaged. Please, fix or remove it.", "Load error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }

@@ -9,26 +9,27 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using PictureDraw;
+using YAXLib;
 
 namespace TetragonsModule
 {
     public class TetragonsModule : Shapes, ISelectable, IMovable, IResizable, IEditable
     {
-//        [YAXSerializableField]
+        [YAXSerializableField]
         private double X1 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         private double Y1 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         private double X2 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         private double Y2 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         private double X3 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         private double Y3 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         private double X4 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         private double Y4 { get; set; }
 
         public TetragonsModule() { }

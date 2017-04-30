@@ -9,22 +9,24 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using PictureDraw;
+using YAXLib;
+
 
 namespace TrianglesModule
 {
     public class TrianglesModule : Shapes, ISelectable, IMovable, IResizable, IEditable
     {
-//        [YAXSerializableField]
+        [YAXSerializableField]
         public double X1 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         public double Y1 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         public double X2 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         public double Y2 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         public double X3 { get; set; }
-//        [YAXSerializableField]
+        [YAXSerializableField]
         public double Y3 { get; set; }
 
         public TrianglesModule() { }

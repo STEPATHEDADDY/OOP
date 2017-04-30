@@ -15,7 +15,7 @@ namespace PictureDraw
 
         public static void getCreatorsNames(MainWindow mainInstance)
         {
-            creatorsNames = importInstance.getCreatorsNames(mainInstance, creatorsShapes.Values.ToList());
+            creatorsNames = importInstance.getCreatorsNames(mainInstance, ref creatorsShapes);
         }
 
         public static void getCreatorsShapes()

@@ -28,7 +28,7 @@ namespace PictureDraw
     public partial class MainWindow : Window
     {
         public MainWindow()
-        {
+        {            
             InitializeComponent();
             GlobalProperties.MainGrid = mainGrid;
             GlobalProperties.Opacity = 0.7;
@@ -155,6 +155,7 @@ namespace PictureDraw
                 {
                     GlobalProperties.selectedShape.ColorFill = ClrPckerFillSelected.SelectedColor.Value;
                     GlobalProperties.selectedShape.ColorStroke = ClrPckerBorderSelected.SelectedColor.Value;
+                    GlobalProperties.selectedShape.RecreateShape();
                 }                
             }
         }

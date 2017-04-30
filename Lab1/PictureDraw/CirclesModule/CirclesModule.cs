@@ -9,12 +9,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using PictureDraw;
+using YAXLib;
 
 namespace CirclesModule
 {
     public class CirclesModule: Shapes, ISelectable, IMovable, IResizable, IEditable
-    {
-        //TODO : SERIALIZATION
+    {        
+        [YAXSerializableField]
         public double Radius { get; set; }
 
         public CirclesModule() { }
