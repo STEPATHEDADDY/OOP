@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace PictureDraw
 {
-    interface IMovable
+    public interface IMovable
     {
         void SetDragPoint(object sender, MouseEventArgs e);
         void MovingShape(object sender, MouseEventArgs e);

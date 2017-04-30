@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,17 +8,24 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Xml.Serialization;
-using YAXLib;
+using PictureDraw;
 
-namespace PictureDraw
-{    
-    public class Circles : Shapes, ISelectable, IMovable, IResizable, IEditable
+namespace CirclesModule
+{
+    public class CirclesModule: Shapes, ISelectable, IMovable, IResizable, IEditable
     {
-        [YAXSerializableField]
+        //TODO : SERIALIZATION
         public double Radius { get; set; }
 
-        public Circles() { }
+        public CirclesModule() { }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            base.OnRender(drawingContext);
+            drawingContext.DrawEllipse(new SolidColorBrush(ColorFill),
+                new Pen(new SolidColorBrush(ColorStroke), ThicknessBorder),
+                new Point(Radius, Radius), Radius, Radius);
+        }
 
         public override void SetEvents()
         {
@@ -38,25 +43,16 @@ namespace PictureDraw
             }
         }
 
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            base.OnRender(drawingContext);
-            //TODO : THICKNESS
-            drawingContext.DrawEllipse(new SolidColorBrush(ColorFill),
-                new Pen(new SolidColorBrush(ColorStroke), ThicknessBorder),
-                new Point(Radius, Radius), Radius, Radius);            
-        }
-
-        public Circles(string name, Point startPoint, Point finishPoint, double radius, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
+        public CirclesModule(string name, Point startPoint, Point finishPoint, double radius, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
                 name, colorFill, colorStroke, ThicknessBorder)
         {
             this.startPoint = startPoint;
             this.finishPoint = finishPoint;
-            Radius = radius; 
-            Width = radius*2;
-            Height = radius*2;
-            SetEvents();    
-        }            
+            Radius = radius;
+            Width = radius * 2;
+            Height = radius * 2;
+            SetEvents();
+        }
 
         public override void Draw()
         {
@@ -69,10 +65,10 @@ namespace PictureDraw
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                var circle = (Circles)sender;
+                var circle = (CirclesModule)sender;
                 if (GlobalProperties.selectedShape != null)
                 {
-                    RemoveSelection(GlobalProperties.selectedShape);
+                    CommonMethods.RemoveSelection(GlobalProperties.selectedShape);
                 }
                 circle.Selection = GetFocusFrame(circle, GlobalProperties.frameSize);
                 GlobalProperties.selectedShape = circle;
@@ -82,18 +78,6 @@ namespace PictureDraw
                 {
                     SetAnglesAction(circle);
                 }
-            }
-        }
-
-        public static void RemoveSelection(Shapes shape)
-        {
-            GlobalProperties.MainCanvas.Children.Remove(shape.Selection);
-            shape.Selection = null;
-            GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
-            //TODO : MAYBE NEED TO REWRITE
-            foreach (var angle in shape.AnglesBorder.Values)
-            {
-                GlobalProperties.MainCanvas.Children.Remove(angle);
             }
         }
 
@@ -143,7 +127,7 @@ namespace PictureDraw
 
         public void SetDragPoint(object sender, MouseEventArgs e)
         {
-            var rect = (Circles) sender;
+            var rect = (CirclesModule)sender;
             if (!GlobalProperties.DrawModeOn)
             {
                 rect.dragPoint = e.GetPosition(GlobalProperties.MainCanvas);
@@ -170,9 +154,9 @@ namespace PictureDraw
             if (!GlobalProperties.DrawModeOn)
             {
                 //TODO : CAN REWRITE WITHOUT GLOBAL VARIABLE
-                if (e.LeftButton == MouseButtonState.Pressed && CommonMethods.CheckType(GlobalProperties.selectedShape, typeof(Circles)))
+                if (e.LeftButton == MouseButtonState.Pressed && CommonMethods.CheckType(GlobalProperties.selectedShape, typeof(CirclesModule)))
                 {
-                    var circle = (Circles)GlobalProperties.selectedShape;
+                    var circle = (CirclesModule)GlobalProperties.selectedShape;
                     GlobalProperties.selectedShape.Opacity = GlobalProperties.Opacity;
                     if (!Double.IsNaN(circle.dragPoint.X))
                     {
@@ -185,7 +169,7 @@ namespace PictureDraw
             }
         }
 
-        private static void ChangePosition(Point offset, Circles shape, double frameSize, Point mousePosition)
+        private static void ChangePosition(Point offset, CirclesModule shape, double frameSize, Point mousePosition)
         {
             Canvas.SetLeft(shape, offset.X);
             Canvas.SetTop(shape, offset.Y);
@@ -226,8 +210,8 @@ namespace PictureDraw
         public void SetResizeAngle(object sender, MouseEventArgs e)
         {
             GlobalProperties.selectedAnglePoint = e.GetPosition(GlobalProperties.MainCanvas);
-            var angle = (Rectangle) sender;
-            GlobalProperties.selectedAngle = angle;            
+            var angle = (Rectangle)sender;
+            GlobalProperties.selectedAngle = angle;
             var secondaryCanvas = new Canvas { Width = GlobalProperties.RectCanvas.Width, Height = GlobalProperties.RectCanvas.Height };
             var secondaryRectCanvas = new Rectangle
             {
@@ -300,10 +284,10 @@ namespace PictureDraw
 
         public override Shapes RecreateShape()
         {
-            var type = GlobalProperties.selectedShape.GetType().Name;
-            GlobalProperties.currentShape = CommonMethods.creators[type];
+            var type = GlobalProperties.selectedShape.GetType();
+            GlobalProperties.currentShape = CommonMethods.creatorsShapes[type];
             GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);
-            RemoveSelection(GlobalProperties.selectedShape);
+            CommonMethods.RemoveSelection(GlobalProperties.selectedShape);
             Shapes shape = GlobalProperties.currentShape.Create("Default", GlobalProperties.selectedShape.startPoint, GlobalProperties.selectedShape.finishPoint,
                 GlobalProperties.selectedShape.ColorFill, GlobalProperties.selectedShape.ColorStroke,
                 GlobalProperties.selectedShape.ThicknessBorder);
@@ -319,7 +303,7 @@ namespace PictureDraw
             SetAnglesAction(shape);
             shape.dragPoint = new Point(double.NaN, Double.NaN);
             GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
-            GlobalProperties.selectedShape = shape;            
+            GlobalProperties.selectedShape = shape;
             GlobalProperties.ShapesList.AllShapes.Add(shape);
         }
 
@@ -334,14 +318,14 @@ namespace PictureDraw
 
         public void ShowProperties(object sender, MouseEventArgs e)
         {
-            var rect = (Circles)sender;
+            var rect = (CirclesModule)sender;
             GlobalProperties.PropertiesPanel.Visibility = Visibility.Visible;
             GlobalProperties.FillSelected.SelectedColor = rect.ColorFill;
             GlobalProperties.BorderSelected.SelectedColor = rect.ColorStroke;
         }
     }
-    
-    class CircleCreator : ICreator
+
+    class CirclesModuleCreator : ICreator
     {
         public Shapes Create(string Name,
             Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder)
@@ -349,8 +333,8 @@ namespace PictureDraw
             var width = Math.Abs(startPoint.X - finishPoint.X);
             var height = Math.Abs(startPoint.Y - finishPoint.Y);
             var radius = width < height ? width / 2 : height / 2;
-            width = radius*2;
-            height = radius*2;
+            width = radius * 2;
+            height = radius * 2;
             var start = new Point();
             if (finishPoint.X < startPoint.X && finishPoint.Y < startPoint.Y) //LEFTTOP
             {
@@ -369,7 +353,12 @@ namespace PictureDraw
                 start = startPoint;
             }
             var finish = new Point(start.X + width, start.Y + height);
-            return new Circles(Name, start, finish, radius, colorFill, colorStroke, ThicknessBorder);
+            return new CirclesModule(Name, start, finish, radius, colorFill, colorStroke, ThicknessBorder);
+        }
+
+        public override string ToString()
+        {
+            return "Circles";
         }
     }
 }

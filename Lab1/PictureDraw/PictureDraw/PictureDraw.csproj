@@ -86,18 +86,13 @@
     <Compile Include="CommonMethods.cs" />
     <Compile Include="IEditable.cs" />
     <Compile Include="IMovable.cs" />
+    <Compile Include="ImportModules.cs" />
     <Compile Include="IResizable.cs" />
-    <Compile Include="Circles.cs" />
     <Compile Include="Dialogs.cs" />
     <Compile Include="GlobalProperties.cs" />
     <Compile Include="ISelectable.cs" />
-    <Compile Include="Lines.cs" />
     <Compile Include="ListShapes.cs" />
-    <Compile Include="Rectangles.cs" />
     <Compile Include="Shapes.cs" />
-    <Compile Include="Squares.cs" />
-    <Compile Include="Tetragons.cs" />
-    <Compile Include="Triangles.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,13 +8,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using YAXLib;
+using PictureDraw;
 
-namespace PictureDraw
+namespace LinesModule
 {
-    public class Lines : Shapes, ISelectable, IMovable, IResizable, IEditable
+    public class LinesModule : Shapes, ISelectable, IMovable, IResizable, IEditable
     {
-        public Lines() { }
+        public LinesModule() { }
 
         public override void SetEvents()
         {
@@ -36,16 +35,15 @@ namespace PictureDraw
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
-            //TODO : THICKNESS            
             drawingContext.DrawLine(new Pen(new SolidColorBrush(ColorStroke), ThicknessBorder),
                 new Point(0, 0), new Point(finishPoint.X - startPoint.X, finishPoint.Y - startPoint.Y));
         }
 
-        public Lines(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
+        public LinesModule(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
                 name, colorFill, colorStroke, ThicknessBorder)
         {
             this.startPoint = startPoint;
-            this.finishPoint = finishPoint;                    
+            this.finishPoint = finishPoint;
             Width = Math.Abs(this.finishPoint.X - this.startPoint.X);
             Height = Math.Abs(this.finishPoint.Y - this.startPoint.Y);
             SetEvents();
@@ -62,10 +60,10 @@ namespace PictureDraw
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                var rect = (Lines)sender;
+                var rect = (LinesModule)sender;
                 if (GlobalProperties.selectedShape != null)
                 {
-                    RemoveSelection(GlobalProperties.selectedShape);
+                    CommonMethods.RemoveSelection(GlobalProperties.selectedShape);
                 }
                 GlobalProperties.selectedShape = rect;
                 GlobalProperties.drawShape = rect;
@@ -74,17 +72,6 @@ namespace PictureDraw
                 {
                     SetAnglesAction(rect);
                 }
-            }
-        }
-
-        public static void RemoveSelection(Shapes shape)
-        {
-            GlobalProperties.MainCanvas.Children.Remove(shape.Selection);
-            shape.Selection = null;
-            GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
-            foreach (var angle in shape.AnglesBorder.Values)
-            {
-                GlobalProperties.MainCanvas.Children.Remove(angle);
             }
         }
 
@@ -114,7 +101,7 @@ namespace PictureDraw
 
         public void SetDragPoint(object sender, MouseEventArgs e)
         {
-            var rect = (Lines)sender;
+            var rect = (LinesModule)sender;
             if (!GlobalProperties.DrawModeOn)
             {
                 rect.dragPoint = e.GetPosition(GlobalProperties.MainCanvas);
@@ -140,9 +127,9 @@ namespace PictureDraw
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                if (e.LeftButton == MouseButtonState.Pressed && CommonMethods.CheckType(GlobalProperties.selectedShape, typeof(Lines)))
+                if (e.LeftButton == MouseButtonState.Pressed && CommonMethods.CheckType(GlobalProperties.selectedShape, typeof(LinesModule)))
                 {
-                    var rect = (Lines) GlobalProperties.selectedShape;
+                    var rect = (LinesModule)GlobalProperties.selectedShape;
                     GlobalProperties.selectedShape.Opacity = GlobalProperties.Opacity;
                     if (!double.IsNaN(rect.dragPoint.X))
                     {
@@ -155,7 +142,7 @@ namespace PictureDraw
             }
         }
 
-        private static void ChangePosition(Point offset, Lines shape, Point mousePosition)
+        private static void ChangePosition(Point offset, LinesModule shape, Point mousePosition)
         {
             Canvas.SetLeft(shape, shape.startPoint.X + offset.X);
             Canvas.SetTop(shape, shape.startPoint.Y + offset.Y);
@@ -177,8 +164,8 @@ namespace PictureDraw
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                var secondaryCanvas = (Canvas) sender;
-                GlobalProperties.selectedShape.Opacity = 1;                                                  
+                var secondaryCanvas = (Canvas)sender;
+                GlobalProperties.selectedShape.Opacity = 1;
                 GlobalProperties.MainCanvas.Children.Remove(secondaryCanvas);
             }
         }
@@ -229,7 +216,7 @@ namespace PictureDraw
                 if (Equals(GlobalProperties.selectedShape.AnglesBorder["second"], GlobalProperties.selectedAngle))
                 {
                     GlobalProperties.selectedShape.finishPoint = new Point(offset.X, offset.Y);
-                }                                        
+                }
                 RecreateShape();
                 GlobalProperties.selectedAngle = GlobalProperties.selectedShape.AnglesBorder[angleName];
             }
@@ -237,10 +224,10 @@ namespace PictureDraw
 
         public override Shapes RecreateShape()
         {
-            var type = GlobalProperties.selectedShape.GetType().Name;
-            GlobalProperties.currentShape = CommonMethods.creators[type];
+            var type = GlobalProperties.selectedShape.GetType();
+            GlobalProperties.currentShape = CommonMethods.creatorsShapes[type];
             GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);
-            RemoveSelection(GlobalProperties.selectedShape);
+            CommonMethods.RemoveSelection(GlobalProperties.selectedShape);
             Shapes shape = GlobalProperties.currentShape.Create("Default",
                 GlobalProperties.selectedShape.startPoint, GlobalProperties.selectedShape.finishPoint,
                 GlobalProperties.selectedShape.ColorFill, GlobalProperties.selectedShape.ColorStroke,
@@ -256,31 +243,36 @@ namespace PictureDraw
             SetAnglesAction(shape);
             shape.dragPoint = new Point(double.NaN, double.NaN);
             GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
-            GlobalProperties.selectedShape = shape;            
+            GlobalProperties.selectedShape = shape;
             GlobalProperties.ShapesList.AllShapes.Add(shape);
         }
 
         public void StopResizeShape(object sender, MouseEventArgs e)
         {
-            var secondaryCanvas = (Canvas) sender;
+            var secondaryCanvas = (Canvas)sender;
             GlobalProperties.MainCanvas.Children.Remove(secondaryCanvas);
         }
 
         public void ShowProperties(object sender, MouseEventArgs e)
         {
-            var rect = (Lines)sender;
+            var rect = (LinesModule)sender;
             GlobalProperties.PropertiesPanel.Visibility = Visibility.Visible;
             GlobalProperties.FillSelected.SelectedColor = rect.ColorFill;
             GlobalProperties.BorderSelected.SelectedColor = rect.ColorStroke;
         }
     }
 
-    class LineCreator : ICreator
+    class LineModuleCreator : ICreator
     {
         public Shapes Create(string Name,
             Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder)
         {
-            return new Lines(Name, startPoint, finishPoint, colorFill, colorStroke, ThicknessBorder);
+            return new LinesModule(Name, startPoint, finishPoint, colorFill, colorStroke, ThicknessBorder);
+        }
+
+        public override string ToString()
+        {
+            return "Lines";
         }
     }
 }

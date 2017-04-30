@@ -8,30 +8,26 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using YAXLib;
+using PictureDraw;
 
-namespace PictureDraw
+namespace TrianglesModule
 {
-    public class Tetragons : Shapes, ISelectable, IMovable, IResizable, IEditable
+    public class TrianglesModule : Shapes, ISelectable, IMovable, IResizable, IEditable
     {
-        [YAXSerializableField]
-        private double X1 { get; set; }
-        [YAXSerializableField]
-        private double Y1 { get; set; }
-        [YAXSerializableField]
-        private double X2 { get; set; }
-        [YAXSerializableField]
-        private double Y2 { get; set; }
-        [YAXSerializableField]
-        private double X3 { get; set; }
-        [YAXSerializableField]
-        private double Y3 { get; set; }
-        [YAXSerializableField]
-        private double X4 { get; set; }
-        [YAXSerializableField]
-        private double Y4 { get; set; }
+//        [YAXSerializableField]
+        public double X1 { get; set; }
+//        [YAXSerializableField]
+        public double Y1 { get; set; }
+//        [YAXSerializableField]
+        public double X2 { get; set; }
+//        [YAXSerializableField]
+        public double Y2 { get; set; }
+//        [YAXSerializableField]
+        public double X3 { get; set; }
+//        [YAXSerializableField]
+        public double Y3 { get; set; }
 
-        public Tetragons() { }
+        public TrianglesModule() { }
 
         public override void SetEvents()
         {
@@ -59,8 +55,7 @@ namespace PictureDraw
                 PointCollection points = new PointCollection
                 {
                     new Point(X2, Y2),
-                    new Point(X3, Y3),
-                    new Point(X4, Y4),
+                    new Point(X3, Y3)
                 };
                 geometryContext.PolyLineTo(points, true, true);
             }
@@ -68,7 +63,7 @@ namespace PictureDraw
                     new Pen(new SolidColorBrush(ColorStroke), ThicknessBorder), streamGeometry);
         }
 
-        public Tetragons(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
+        public TrianglesModule(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
                 name, colorFill, colorStroke, ThicknessBorder)
         {
             this.startPoint = startPoint;
@@ -77,12 +72,10 @@ namespace PictureDraw
             Height = this.finishPoint.Y - this.startPoint.Y;
             X1 = 0;
             Y1 = Height;
-            X2 = Width / 3;
+            X2 = Width / 2;
             Y2 = 0;
-            X3 = 2 * X2;
-            Y3 = 0;
-            X4 = Width;
-            Y4 = Height;
+            X3 = Width;
+            Y3 = Height;
             SetEvents();
         }
 
@@ -97,10 +90,10 @@ namespace PictureDraw
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                var triangle = (Tetragons)sender;
+                var triangle = (TrianglesModule)sender;
                 if (GlobalProperties.selectedShape != null)
                 {
-                    RemoveSelection(GlobalProperties.selectedShape);
+                    CommonMethods.RemoveSelection(GlobalProperties.selectedShape);
                 }
                 triangle.Selection = GetFocusFrame(triangle, GlobalProperties.frameSize);
                 GlobalProperties.selectedShape = triangle;
@@ -110,17 +103,6 @@ namespace PictureDraw
                 {
                     SetAnglesAction(triangle);
                 }
-            }
-        }
-
-        public static void RemoveSelection(Shapes shape)
-        {
-            GlobalProperties.MainCanvas.Children.Remove(shape.Selection);
-            shape.Selection = null;
-            GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
-            foreach (var angle in shape.AnglesBorder.Values)
-            {
-                GlobalProperties.MainCanvas.Children.Remove(angle);
             }
         }
 
@@ -171,7 +153,7 @@ namespace PictureDraw
         public void SetDragPoint(object sender, MouseEventArgs e)
         {
             //TODO : REFLECTION CAST WITHOUT TYPE
-            var rect = (Tetragons)sender;
+            var rect = (TrianglesModule)sender;
             if (!GlobalProperties.DrawModeOn)
             {
                 rect.dragPoint = e.GetPosition(GlobalProperties.MainCanvas);
@@ -197,11 +179,11 @@ namespace PictureDraw
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                if (e.LeftButton == MouseButtonState.Pressed && CommonMethods.CheckType(GlobalProperties.selectedShape, typeof(Tetragons)))
+                if (e.LeftButton == MouseButtonState.Pressed && CommonMethods.CheckType(GlobalProperties.selectedShape, typeof(TrianglesModule)))
                 {
-                    var triangle = (Tetragons)GlobalProperties.selectedShape;
+                    var triangle = (TrianglesModule)GlobalProperties.selectedShape;
                     GlobalProperties.selectedShape.Opacity = GlobalProperties.Opacity;
-                    if (!double.IsNaN(triangle.dragPoint.X))
+                    if (!Double.IsNaN(triangle.dragPoint.X))
                     {
                         var currentMousePosition = e.GetPosition(GlobalProperties.MainCanvas);
                         var offset = new Point(triangle.startPoint.X + (currentMousePosition.X - triangle.dragPoint.X),
@@ -212,7 +194,7 @@ namespace PictureDraw
             }
         }
 
-        private static void ChangePosition(Point offset, Tetragons shape, double frameSize, Point mousePosition)
+        private static void ChangePosition(Point offset, TrianglesModule shape, double frameSize, Point mousePosition)
         {
             Canvas.SetLeft(shape, offset.X);
             Canvas.SetTop(shape, offset.Y);
@@ -235,13 +217,14 @@ namespace PictureDraw
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                var secondaryCanvas = (Canvas) sender;
+                var secondaryCanvas = (Canvas)sender;
                 GlobalProperties.selectedShape.Opacity = 1;
                 GlobalProperties.selectedShape.finishPoint = new Point(GlobalProperties.selectedShape.startPoint.X +
                         GlobalProperties.selectedShape.Width, GlobalProperties.selectedShape.startPoint.Y + GlobalProperties.selectedShape.Height);
                 GlobalProperties.MainCanvas.Children.Remove(secondaryCanvas);
             }
         }
+
 
         public void SetAnglesAction(Shapes rect)
         {
@@ -254,7 +237,8 @@ namespace PictureDraw
         public void SetResizeAngle(object sender, MouseEventArgs e)
         {
             GlobalProperties.selectedAnglePoint = e.GetPosition(GlobalProperties.MainCanvas);
-            GlobalProperties.selectedAngle = (Rectangle)sender;
+            var angle = (Rectangle)sender;
+            GlobalProperties.selectedAngle = angle;
             var secondaryCanvas = new Canvas { Width = GlobalProperties.RectCanvas.Width, Height = GlobalProperties.RectCanvas.Height };
             var secondaryRectCanvas = new Rectangle
             {
@@ -314,10 +298,10 @@ namespace PictureDraw
 
         public override Shapes RecreateShape()
         {
-            var type = GlobalProperties.selectedShape.GetType().Name;
-            GlobalProperties.currentShape = CommonMethods.creators[type];
+            var type = GlobalProperties.selectedShape.GetType();
+            GlobalProperties.currentShape = CommonMethods.creatorsShapes[type];
             GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);
-            RemoveSelection(GlobalProperties.selectedShape);
+            CommonMethods.RemoveSelection(GlobalProperties.selectedShape);
             Shapes shape = GlobalProperties.currentShape.Create("Default",
                 GlobalProperties.selectedShape.startPoint, GlobalProperties.selectedShape.finishPoint,
                 GlobalProperties.selectedShape.ColorFill, GlobalProperties.selectedShape.ColorStroke,
@@ -357,21 +341,26 @@ namespace PictureDraw
 
         public void ShowProperties(object sender, MouseEventArgs e)
         {
-            var rect = (Tetragons)sender;
+            var rect = (TrianglesModule)sender;
             GlobalProperties.PropertiesPanel.Visibility = Visibility.Visible;
             GlobalProperties.FillSelected.SelectedColor = rect.ColorFill;
             GlobalProperties.BorderSelected.SelectedColor = rect.ColorStroke;
         }
     }
-    
-    class TetragonCreator : ICreator
+
+    class TriangleModuleCreator : ICreator
     {
         public Shapes Create(string Name,
             Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder)
         {
             var start = new Point(Math.Min(startPoint.X, finishPoint.X), Math.Min(startPoint.Y, finishPoint.Y));
             var finish = new Point(Math.Max(startPoint.X, finishPoint.X), Math.Max(startPoint.Y, finishPoint.Y));
-            return new Tetragons(Name, start, finish, colorFill, colorStroke, ThicknessBorder);
+            return new TrianglesModule(Name, start, finish, colorFill, colorStroke, ThicknessBorder);
+        }
+
+        public override string ToString()
+        {
+            return "Triangles";
         }
     }
 }

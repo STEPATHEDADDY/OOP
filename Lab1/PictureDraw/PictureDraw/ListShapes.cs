@@ -17,11 +17,6 @@ namespace PictureDraw
             AllShapes = new List<Shapes>();
         }
         
-//        void IDeserializationCallback.OnDeserialization(Object sender)
-//        {
-//            Debug.WriteLine("1");
-//        }
-
         [OnSerializing]        
         void Temp(Object sender)
         {

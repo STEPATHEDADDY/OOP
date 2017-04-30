@@ -24,7 +24,7 @@ namespace PictureDraw
                 YAXSerializer serializer = new YAXSerializer(typeof(ListShapes));
                 string xmlResult = String.Empty;
                 xmlResult = serializer.Serialize(listShapes);
-                System.IO.File.WriteAllText(saveFileDialog.FileName, xmlResult);
+                File.WriteAllText(saveFileDialog.FileName, xmlResult);
             }
         }
 
@@ -35,7 +35,7 @@ namespace PictureDraw
             if (openFileDialog.ShowDialog() == true)
             {                
                 YAXSerializer serializer = new YAXSerializer(typeof(ListShapes));
-                string xmlResult = System.IO.File.ReadAllText(openFileDialog.FileName);
+                string xmlResult = File.ReadAllText(openFileDialog.FileName);
                 try
                 {
                     allShapes = (ListShapes)serializer.Deserialize(xmlResult);
