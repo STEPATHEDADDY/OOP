@@ -92,6 +92,7 @@
     <Compile Include="GlobalProperties.cs" />
     <Compile Include="ISelectable.cs" />
     <Compile Include="ListShapes.cs" />
+    <Compile Include="RSACrypt.cs" />
     <Compile Include="Shapes.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

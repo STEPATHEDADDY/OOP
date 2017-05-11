@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media;
+using DigitalSignature;
 using Xceed.Wpf.Toolkit;
 using Xceed.Wpf.Toolkit.Core.Converters;
 using MessageBox = Xceed.Wpf.Toolkit.MessageBox;
@@ -36,7 +38,7 @@ namespace PictureDraw
                 var name = creators[creator].ToString();
                 result[name] = creators[creator];
                 try
-                {
+                {                    
                     Button myButton = new Button
                     {
                         Name = name,
@@ -99,7 +101,10 @@ namespace PictureDraw
             {
                 try
                 {
-                    modules.Add(Assembly.LoadFrom(file.FullName));
+                    if (RSACrypt.VerifySignedHash(File.ReadAllBytes(file.FullName)))
+                    {
+                        modules.Add(Assembly.LoadFrom(file.FullName));
+                    }
                 }
                 catch
                 {                    
