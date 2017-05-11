@@ -3,19 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:m="clr-namespace:PictureDraw"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1200">
-    <Grid>
+    <Grid x:Name="mainGrid">
         <Rectangle Fill="#FF0B0029" HorizontalAlignment="Left" Height="770" VerticalAlignment="Top" Width="133"/>
         <Rectangle Fill="#FF0B0029" HorizontalAlignment="Left" Height="79" VerticalAlignment="Top" Width="1076" Margin="118,691,-0.4,0" RenderTransformOrigin="0.5,0.5"/>
-        <Button x:Name="buttonRectangle" Content="Rectangles" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0A0025"/>
-        <Button x:Name="buttonCircle" Content="Circles" HorizontalAlignment="Left" Margin="10,34,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0A0025"/>
-        <Button x:Name="buttonTriangle" Content="Triangles" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0B0029"/>
-        <Button x:Name="buttonLine" Content="Lines" HorizontalAlignment="Left" Margin="10,81,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0B0029"/>
-        <Button x:Name="buttonSquare" Content="Squares" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0B0029"/>
-        <Button x:Name="buttonTetragon" Content="Tetragons" HorizontalAlignment="Left" Margin="10,129,0,0" VerticalAlignment="Top" Width="112" Foreground="White" BorderBrush="White" Click="buttonShape_Click" Background="#FF0B0029"/>
         <Canvas x:Name="mainCanvas" Margin="133,0,-0.4,79.4" MouseDown="mainCanvas_MouseDown" MouseUp="mainCanvas_MouseUp" MouseMove="mainCanvas_MouseMove">
             <Rectangle x:Name="rectMainCanvas" Fill="White" Height="691" Width="1061" Stroke="White" MouseDown="rectMainCanvas_MouseDown"/>
         </Canvas>

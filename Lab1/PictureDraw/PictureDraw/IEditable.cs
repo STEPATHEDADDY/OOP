@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace PictureDraw
 {
-    interface IEditable
+    public interface IEditable
     {
         void ShowProperties(object sender, MouseEventArgs e);
     }

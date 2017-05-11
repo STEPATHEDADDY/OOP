@@ -15,10 +15,6 @@ using YAXLib;
 
 namespace PictureDraw
 {       
-//    [XmlInclude(typeof(Rectangles))]
-//    [XmlInclude(typeof(Circles))]
-//    [XmlInclude(typeof(Triangles))]
-//    [XmlInclude(typeof(MatrixTransform))]
     [YAXSerializableType(FieldsToSerialize = YAXSerializationFields.AttributedFieldsOnly)]    
     public abstract class Shapes : UIElement
     {
@@ -56,7 +52,6 @@ namespace PictureDraw
         public abstract void Draw();
         public abstract void SetEvents();
         public abstract Shapes RecreateShape();
-
     }
 
     public interface ICreator

@@ -28,8 +28,9 @@ namespace PictureDraw
     public partial class MainWindow : Window
     {
         public MainWindow()
-        {
+        {            
             InitializeComponent();
+            GlobalProperties.MainGrid = mainGrid;
             GlobalProperties.Opacity = 0.7;
             GlobalProperties.ShapesList = new ListShapes();
             GlobalProperties.MainCanvas = mainCanvas;
@@ -41,14 +42,17 @@ namespace PictureDraw
             GlobalProperties.FillSelected = ClrPckerFillSelected;
             GlobalProperties.BorderSelected = ClrPckerBorderSelected;
             GlobalProperties.MinShapeSize = 30;
+            Panel.SetZIndex(GlobalProperties.MainCanvas, -1);                
+            CommonMethods.getCreatorsShapes();              
+            CommonMethods.getCreatorsNames(this);
             ClrPckerFill.SelectedColor = Color.FromArgb(255, 100, 100, 100);
             ClrPckerBorder.SelectedColor = Color.FromArgb(255, 255, 100, 100);
         }
 
-        private void buttonShape_Click(object sender, RoutedEventArgs e)
+        public void buttonShape_Click(object sender, RoutedEventArgs e)
         {
             var button = (Button) sender;
-            GlobalProperties.currentShape = CommonMethods.creators[button.Content.ToString()];
+            GlobalProperties.currentShape = CommonMethods.creatorsNames[button.Name];
         }
 
         private void mainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -71,7 +75,7 @@ namespace PictureDraw
                     var selectableShape = GlobalProperties.selectedShape as ISelectable;
                     if (selectableShape != null)
                     {
-                        Rectangles.RemoveSelection(GlobalProperties.selectedShape);
+                        CommonMethods.RemoveSelection(GlobalProperties.selectedShape);
                     }
                     GlobalProperties.selectedShape = null;
                     GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
@@ -110,7 +114,7 @@ namespace PictureDraw
         }
 
         private void buttonSaveLoad_Click(object sender, RoutedEventArgs e)
-        {
+        {            
             var button = (Button)sender;
             if (button.Equals(buttonSaveImage))
             {
@@ -152,7 +156,7 @@ namespace PictureDraw
                 {
                     GlobalProperties.selectedShape.ColorFill = ClrPckerFillSelected.SelectedColor.Value;
                     GlobalProperties.selectedShape.ColorStroke = ClrPckerBorderSelected.SelectedColor.Value;
-                    var shape = GlobalProperties.selectedShape.RecreateShape();                    
+                    GlobalProperties.selectedShape.RecreateShape();
                 }                
             }
         }

@@ -8,30 +8,25 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using PictureDraw;
 using YAXLib;
 
-namespace PictureDraw
+namespace CirclesModule
 {
-    public class Tetragons : Shapes, ISelectable, IMovable, IResizable, IEditable
-    {
+    public class CirclesModule: Shapes, ISelectable, IMovable, IResizable, IEditable
+    {        
         [YAXSerializableField]
-        private double X1 { get; set; }
-        [YAXSerializableField]
-        private double Y1 { get; set; }
-        [YAXSerializableField]
-        private double X2 { get; set; }
-        [YAXSerializableField]
-        private double Y2 { get; set; }
-        [YAXSerializableField]
-        private double X3 { get; set; }
-        [YAXSerializableField]
-        private double Y3 { get; set; }
-        [YAXSerializableField]
-        private double X4 { get; set; }
-        [YAXSerializableField]
-        private double Y4 { get; set; }
+        public double Radius { get; set; }
 
-        public Tetragons() { }
+        public CirclesModule() { }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            base.OnRender(drawingContext);
+            drawingContext.DrawEllipse(new SolidColorBrush(ColorFill),
+                new Pen(new SolidColorBrush(ColorStroke), ThicknessBorder),
+                new Point(Radius, Radius), Radius, Radius);
+        }
 
         public override void SetEvents()
         {
@@ -49,40 +44,14 @@ namespace PictureDraw
             }
         }
 
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            base.OnRender(drawingContext);
-            StreamGeometry streamGeometry = new StreamGeometry();
-            using (StreamGeometryContext geometryContext = streamGeometry.Open())
-            {
-                geometryContext.BeginFigure(new Point(X1, Y1), true, true);
-                PointCollection points = new PointCollection
-                {
-                    new Point(X2, Y2),
-                    new Point(X3, Y3),
-                    new Point(X4, Y4),
-                };
-                geometryContext.PolyLineTo(points, true, true);
-            }
-            drawingContext.DrawGeometry(new SolidColorBrush(ColorFill),
-                    new Pen(new SolidColorBrush(ColorStroke), ThicknessBorder), streamGeometry);
-        }
-
-        public Tetragons(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
+        public CirclesModule(string name, Point startPoint, Point finishPoint, double radius, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
                 name, colorFill, colorStroke, ThicknessBorder)
         {
             this.startPoint = startPoint;
             this.finishPoint = finishPoint;
-            Width = this.finishPoint.X - this.startPoint.X;
-            Height = this.finishPoint.Y - this.startPoint.Y;
-            X1 = 0;
-            Y1 = Height;
-            X2 = Width / 3;
-            Y2 = 0;
-            X3 = 2 * X2;
-            Y3 = 0;
-            X4 = Width;
-            Y4 = Height;
+            Radius = radius;
+            Width = radius * 2;
+            Height = radius * 2;
             SetEvents();
         }
 
@@ -97,44 +66,33 @@ namespace PictureDraw
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                var triangle = (Tetragons)sender;
+                var circle = (CirclesModule)sender;
                 if (GlobalProperties.selectedShape != null)
                 {
-                    RemoveSelection(GlobalProperties.selectedShape);
+                    CommonMethods.RemoveSelection(GlobalProperties.selectedShape);
                 }
-                triangle.Selection = GetFocusFrame(triangle, GlobalProperties.frameSize);
-                GlobalProperties.selectedShape = triangle;
-                GlobalProperties.drawShape = triangle;
-                triangle.AnglesBorder = GetFocusAngles(triangle, GlobalProperties.frameSize);
-                if (CommonMethods.CheckType(triangle, typeof(IResizable)))
+                circle.Selection = GetFocusFrame(circle, GlobalProperties.frameSize);
+                GlobalProperties.selectedShape = circle;
+                GlobalProperties.drawShape = circle;
+                circle.AnglesBorder = GetFocusAngles(circle, GlobalProperties.frameSize);
+                if (CommonMethods.CheckType(circle, typeof(IResizable)))
                 {
-                    SetAnglesAction(triangle);
+                    SetAnglesAction(circle);
                 }
             }
         }
 
-        public static void RemoveSelection(Shapes shape)
-        {
-            GlobalProperties.MainCanvas.Children.Remove(shape.Selection);
-            shape.Selection = null;
-            GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
-            foreach (var angle in shape.AnglesBorder.Values)
-            {
-                GlobalProperties.MainCanvas.Children.Remove(angle);
-            }
-        }
-
-        private Rectangle GetFocusFrame(Shapes triangle, double frameSize)
+        private Rectangle GetFocusFrame(Shapes circle, double frameSize)
         {
             Rectangle focus = new Rectangle();
             focus.Stroke = new SolidColorBrush(Colors.SlateBlue);
             focus.StrokeDashArray = new DoubleCollection(new List<double> { 5, 1 });
             focus.StrokeThickness = 2.0;
-            focus.Width = triangle.Width + frameSize;
-            focus.Height = triangle.Height + frameSize;
+            focus.Width = circle.Width + frameSize;
+            focus.Height = circle.Height + frameSize;
             GlobalProperties.MainCanvas.Children.Add(focus);
-            Canvas.SetLeft(focus, triangle.startPoint.X - frameSize / 2);
-            Canvas.SetTop(focus, triangle.startPoint.Y - frameSize / 2);
+            Canvas.SetLeft(focus, circle.startPoint.X - frameSize / 2);
+            Canvas.SetTop(focus, circle.startPoint.Y - frameSize / 2);
             return focus;
         }
 
@@ -170,8 +128,7 @@ namespace PictureDraw
 
         public void SetDragPoint(object sender, MouseEventArgs e)
         {
-            //TODO : REFLECTION CAST WITHOUT TYPE
-            var rect = (Tetragons)sender;
+            var rect = (CirclesModule)sender;
             if (!GlobalProperties.DrawModeOn)
             {
                 rect.dragPoint = e.GetPosition(GlobalProperties.MainCanvas);
@@ -197,22 +154,23 @@ namespace PictureDraw
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                if (e.LeftButton == MouseButtonState.Pressed && CommonMethods.CheckType(GlobalProperties.selectedShape, typeof(Tetragons)))
+                //TODO : CAN REWRITE WITHOUT GLOBAL VARIABLE
+                if (e.LeftButton == MouseButtonState.Pressed && CommonMethods.CheckType(GlobalProperties.selectedShape, typeof(CirclesModule)))
                 {
-                    var triangle = (Tetragons)GlobalProperties.selectedShape;
+                    var circle = (CirclesModule)GlobalProperties.selectedShape;
                     GlobalProperties.selectedShape.Opacity = GlobalProperties.Opacity;
-                    if (!double.IsNaN(triangle.dragPoint.X))
+                    if (!Double.IsNaN(circle.dragPoint.X))
                     {
                         var currentMousePosition = e.GetPosition(GlobalProperties.MainCanvas);
-                        var offset = new Point(triangle.startPoint.X + (currentMousePosition.X - triangle.dragPoint.X),
-                            triangle.startPoint.Y + (currentMousePosition.Y - triangle.dragPoint.Y));
-                        ChangePosition(offset, triangle, GlobalProperties.frameSize, currentMousePosition);
+                        var offset = new Point(circle.startPoint.X + (currentMousePosition.X - circle.dragPoint.X),
+                            circle.startPoint.Y + (currentMousePosition.Y - circle.dragPoint.Y));
+                        ChangePosition(offset, circle, GlobalProperties.frameSize, currentMousePosition);
                     }
                 }
             }
         }
 
-        private static void ChangePosition(Point offset, Tetragons shape, double frameSize, Point mousePosition)
+        private static void ChangePosition(Point offset, CirclesModule shape, double frameSize, Point mousePosition)
         {
             Canvas.SetLeft(shape, offset.X);
             Canvas.SetTop(shape, offset.Y);
@@ -230,12 +188,11 @@ namespace PictureDraw
                 mousePosition.Y);
         }
 
-        //TODO : ADD NEW SHAPE TO LIST
         public void StopMovingShape(object sender, MouseEventArgs e)
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                var secondaryCanvas = (Canvas) sender;
+                var secondaryCanvas = (Canvas)sender;
                 GlobalProperties.selectedShape.Opacity = 1;
                 GlobalProperties.selectedShape.finishPoint = new Point(GlobalProperties.selectedShape.startPoint.X +
                         GlobalProperties.selectedShape.Width, GlobalProperties.selectedShape.startPoint.Y + GlobalProperties.selectedShape.Height);
@@ -243,9 +200,9 @@ namespace PictureDraw
             }
         }
 
-        public void SetAnglesAction(Shapes rect)
+        public void SetAnglesAction(Shapes circle)
         {
-            foreach (var angle in rect.AnglesBorder.Values)
+            foreach (var angle in circle.AnglesBorder.Values)
             {
                 angle.MouseDown += SetResizeAngle;
             }
@@ -254,7 +211,8 @@ namespace PictureDraw
         public void SetResizeAngle(object sender, MouseEventArgs e)
         {
             GlobalProperties.selectedAnglePoint = e.GetPosition(GlobalProperties.MainCanvas);
-            GlobalProperties.selectedAngle = (Rectangle)sender;
+            var angle = (Rectangle)sender;
+            GlobalProperties.selectedAngle = angle;
             var secondaryCanvas = new Canvas { Width = GlobalProperties.RectCanvas.Width, Height = GlobalProperties.RectCanvas.Height };
             var secondaryRectCanvas = new Rectangle
             {
@@ -283,43 +241,55 @@ namespace PictureDraw
                     {GlobalProperties.selectedShape.AnglesBorder["rightBottom"], new []{1, 1} },
                     {GlobalProperties.selectedShape.AnglesBorder["leftBottom"], new []{-1, 1} }
                 };
-                Dictionary<Rectangle, int[]> pointsConsts = new Dictionary<Rectangle, int[]>
-                {
-                    {GlobalProperties.selectedShape.AnglesBorder["leftTop"], new []{1, 1, 0, 0} },
-                    {GlobalProperties.selectedShape.AnglesBorder["rightTop"], new []{0, 1, 1, 0} },
-                    {GlobalProperties.selectedShape.AnglesBorder["rightBottom"], new []{0, 0, 1, 1} },
-                    {GlobalProperties.selectedShape.AnglesBorder["leftBottom"], new []{1, 0, 0, 1} }
-                };
                 var angleName =
                     GlobalProperties.selectedShape.AnglesBorder.Keys.First(
                         k => Equals(GlobalProperties.selectedShape.AnglesBorder[k], GlobalProperties.selectedAngle));
-                var offset = GetOffset(e);
-                if (GlobalProperties.selectedShape.Width + sizeConsts[GlobalProperties.selectedAngle][0] * offset.X > GlobalProperties.MinShapeSize &&
-                    GlobalProperties.selectedShape.Height + sizeConsts[GlobalProperties.selectedAngle][1] * offset.Y > GlobalProperties.MinShapeSize)
+                var offset = e.GetPosition(GlobalProperties.MainCanvas);
+                if ((GlobalProperties.selectedShape.Width + sizeConsts[GlobalProperties.selectedAngle][0] *
+                    (offset.X - GlobalProperties.selectedShape.finishPoint.X) > GlobalProperties.MinShapeSize) &&
+                   (GlobalProperties.selectedShape.Height + sizeConsts[GlobalProperties.selectedAngle][1] *
+                   (offset.Y - GlobalProperties.selectedShape.finishPoint.Y) > GlobalProperties.MinShapeSize))
                 {
-                    Canvas.SetLeft(GlobalProperties.selectedAngle, Canvas.GetLeft(GlobalProperties.selectedAngle) + offset.X);
-                    Canvas.SetTop(GlobalProperties.selectedAngle, Canvas.GetTop(GlobalProperties.selectedAngle) + offset.Y);
-                    GlobalProperties.selectedShape.startPoint =
-                        new Point(GlobalProperties.selectedShape.startPoint.X + pointsConsts[GlobalProperties.selectedAngle][0] * offset.X,
-                            GlobalProperties.selectedShape.startPoint.Y + pointsConsts[GlobalProperties.selectedAngle][1] * offset.Y);
+                    var anglePosition = GlobalProperties.selectedShape.AnglesBorder.First(f => Equals(f.Value, GlobalProperties.selectedAngle));
+                    if (Equals(anglePosition.Value, GlobalProperties.selectedShape.AnglesBorder["rightBottom"]))
+                    {
+                        GlobalProperties.selectedShape.startPoint =
+                            new Point(GlobalProperties.selectedShape.startPoint.X,
+                                GlobalProperties.selectedShape.startPoint.Y);
+                    }
+                    if (Equals(anglePosition.Value, GlobalProperties.selectedShape.AnglesBorder["rightTop"]))
+                    {
+                        GlobalProperties.selectedShape.startPoint =
+                            new Point(GlobalProperties.selectedShape.startPoint.X,
+                                GlobalProperties.selectedShape.finishPoint.Y);
+                    }
+                    if (Equals(anglePosition.Value, GlobalProperties.selectedShape.AnglesBorder["leftTop"]))
+                    {
+                        GlobalProperties.selectedShape.startPoint =
+                            new Point(GlobalProperties.selectedShape.finishPoint.X,
+                                GlobalProperties.selectedShape.finishPoint.Y);
+                    }
+                    if (Equals(anglePosition.Value, GlobalProperties.selectedShape.AnglesBorder["leftBottom"]))
+                    {
+                        GlobalProperties.selectedShape.startPoint =
+                            new Point(GlobalProperties.selectedShape.finishPoint.X,
+                                GlobalProperties.selectedShape.startPoint.Y);
+                    }
                     GlobalProperties.selectedShape.finishPoint =
-                        new Point(GlobalProperties.selectedShape.finishPoint.X + pointsConsts[GlobalProperties.selectedAngle][2] * offset.X,
-                            GlobalProperties.selectedShape.finishPoint.Y + pointsConsts[GlobalProperties.selectedAngle][3] * offset.Y);
+                        new Point(offset.X, offset.Y);
                     RecreateShape();
                     GlobalProperties.selectedAngle = GlobalProperties.selectedShape.AnglesBorder[angleName];
-                    GlobalProperties.selectedAnglePoint = new Point(e.GetPosition(GlobalProperties.MainCanvas).X, e.GetPosition(GlobalProperties.MainCanvas).Y);
                 }
             }
         }
 
         public override Shapes RecreateShape()
         {
-            var type = GlobalProperties.selectedShape.GetType().Name;
-            GlobalProperties.currentShape = CommonMethods.creators[type];
+            var type = GlobalProperties.selectedShape.GetType();
+            GlobalProperties.currentShape = CommonMethods.creatorsShapes[type];
             GlobalProperties.MainCanvas.Children.Remove(GlobalProperties.selectedShape);
-            RemoveSelection(GlobalProperties.selectedShape);
-            Shapes shape = GlobalProperties.currentShape.Create("Default",
-                GlobalProperties.selectedShape.startPoint, GlobalProperties.selectedShape.finishPoint,
+            CommonMethods.RemoveSelection(GlobalProperties.selectedShape);
+            Shapes shape = GlobalProperties.currentShape.Create("Default", GlobalProperties.selectedShape.startPoint, GlobalProperties.selectedShape.finishPoint,
                 GlobalProperties.selectedShape.ColorFill, GlobalProperties.selectedShape.ColorStroke,
                 GlobalProperties.selectedShape.ThicknessBorder);
             shape.Draw();
@@ -332,18 +302,10 @@ namespace PictureDraw
             shape.Selection = GetFocusFrame(shape, GlobalProperties.frameSize);
             shape.AnglesBorder = GetFocusAngles(shape, GlobalProperties.frameSize);
             SetAnglesAction(shape);
-            shape.dragPoint = new Point(double.NaN, double.NaN);
+            shape.dragPoint = new Point(double.NaN, Double.NaN);
             GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
             GlobalProperties.selectedShape = shape;
             GlobalProperties.ShapesList.AllShapes.Add(shape);
-        }
-
-        private static Point GetOffset(MouseEventArgs e)
-        {
-            var currentMousePosition = e.GetPosition(GlobalProperties.MainCanvas);
-            var offset = new Point(currentMousePosition.X - GlobalProperties.selectedAnglePoint.X,
-                currentMousePosition.Y - GlobalProperties.selectedAnglePoint.Y);
-            return offset;
         }
 
         public void StopResizeShape(object sender, MouseEventArgs e)
@@ -357,21 +319,47 @@ namespace PictureDraw
 
         public void ShowProperties(object sender, MouseEventArgs e)
         {
-            var rect = (Tetragons)sender;
+            var rect = (CirclesModule)sender;
             GlobalProperties.PropertiesPanel.Visibility = Visibility.Visible;
             GlobalProperties.FillSelected.SelectedColor = rect.ColorFill;
             GlobalProperties.BorderSelected.SelectedColor = rect.ColorStroke;
         }
     }
-    
-    class TetragonCreator : ICreator
+
+    class CirclesModuleCreator : ICreator
     {
         public Shapes Create(string Name,
             Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder)
         {
-            var start = new Point(Math.Min(startPoint.X, finishPoint.X), Math.Min(startPoint.Y, finishPoint.Y));
-            var finish = new Point(Math.Max(startPoint.X, finishPoint.X), Math.Max(startPoint.Y, finishPoint.Y));
-            return new Tetragons(Name, start, finish, colorFill, colorStroke, ThicknessBorder);
+            var width = Math.Abs(startPoint.X - finishPoint.X);
+            var height = Math.Abs(startPoint.Y - finishPoint.Y);
+            var radius = width < height ? width / 2 : height / 2;
+            width = radius * 2;
+            height = radius * 2;
+            var start = new Point();
+            if (finishPoint.X < startPoint.X && finishPoint.Y < startPoint.Y) //LEFTTOP
+            {
+                start = new Point(startPoint.X - width, startPoint.Y - height);
+            }
+            if (finishPoint.X > startPoint.X && finishPoint.Y < startPoint.Y) //RIGHTTOP
+            {
+                start = new Point(startPoint.X, startPoint.Y - height);
+            }
+            if (finishPoint.X < startPoint.X && finishPoint.Y > startPoint.Y) //LEFTBOT
+            {
+                start = new Point(startPoint.X - width, startPoint.Y);
+            }
+            if (finishPoint.X > startPoint.X && finishPoint.Y > startPoint.Y) //RIGHTBOT
+            {
+                start = startPoint;
+            }
+            var finish = new Point(start.X + width, start.Y + height);
+            return new CirclesModule(Name, start, finish, radius, colorFill, colorStroke, ThicknessBorder);
+        }
+
+        public override string ToString()
+        {
+            return "Circles";
         }
     }
 }
