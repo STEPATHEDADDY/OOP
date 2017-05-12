@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -31,7 +29,7 @@ namespace TrianglesModule
 
         public TrianglesModule() { }
 
-        public override void SetEvents()
+        public sealed override void SetEvents()
         {
             if (CommonMethods.CheckType(this, typeof(ISelectable)))
             {
@@ -65,8 +63,8 @@ namespace TrianglesModule
                     new Pen(new SolidColorBrush(ColorStroke), ThicknessBorder), streamGeometry);
         }
 
-        public TrianglesModule(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
-                name, colorFill, colorStroke, ThicknessBorder)
+        public TrianglesModule(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double thicknessBorder) : base(
+                name, colorFill, colorStroke, thicknessBorder)
         {
             this.startPoint = startPoint;
             this.finishPoint = finishPoint;
@@ -79,13 +77,6 @@ namespace TrianglesModule
             X3 = Width;
             Y3 = Height;
             SetEvents();
-        }
-
-        public override void Draw()
-        {
-            Canvas.SetLeft(this, startPoint.X);
-            Canvas.SetTop(this, startPoint.Y);
-            GlobalProperties.MainCanvas.Children.Add(this);
         }
 
         public void SelectShape(object sender, MouseEventArgs e)
@@ -108,53 +99,8 @@ namespace TrianglesModule
             }
         }
 
-        private Rectangle GetFocusFrame(Shapes triangle, double frameSize)
-        {
-            Rectangle focus = new Rectangle();
-            focus.Stroke = new SolidColorBrush(Colors.SlateBlue);
-            focus.StrokeDashArray = new DoubleCollection(new List<double> { 5, 1 });
-            focus.StrokeThickness = 2.0;
-            focus.Width = triangle.Width + frameSize;
-            focus.Height = triangle.Height + frameSize;
-            GlobalProperties.MainCanvas.Children.Add(focus);
-            Canvas.SetLeft(focus, triangle.startPoint.X - frameSize / 2);
-            Canvas.SetTop(focus, triangle.startPoint.Y - frameSize / 2);
-            return focus;
-        }
-
-        public Dictionary<string, Rectangle> GetFocusAngles(Shapes shape, double frameSize)
-        {
-            const double SIZE_ANGLES = 6;
-            var leftTopPoint = new Point(shape.startPoint.X - (frameSize + SIZE_ANGLES) / 2, shape.startPoint.Y - (frameSize + SIZE_ANGLES) / 2);
-            var rightBottomPoint = new Point(shape.startPoint.X + shape.Width + SIZE_ANGLES / 2, shape.startPoint.Y + shape.Height + SIZE_ANGLES / 2);
-            var rightTopPoint = new Point(rightBottomPoint.X, leftTopPoint.Y);
-            var leftBottomPoint = new Point(leftTopPoint.X, rightBottomPoint.Y);
-            var leftTopAngle = GetAngle(leftTopPoint, SIZE_ANGLES);
-            var rightTopAngle = GetAngle(rightTopPoint, SIZE_ANGLES);
-            var rightBottomAngle = GetAngle(rightBottomPoint, SIZE_ANGLES);
-            var leftBottomAngle = GetAngle(leftBottomPoint, SIZE_ANGLES);
-            var result = new Dictionary<string, Rectangle>
-            {
-                {"leftTop", leftTopAngle },
-                {"rightTop", rightTopAngle },
-                {"rightBottom", rightBottomAngle },
-                {"leftBottom", leftBottomAngle }
-            };
-            return result;
-        }
-
-        private Rectangle GetAngle(Point position, double size)
-        {
-            var angle = new Rectangle { Width = size, Height = size, Fill = Brushes.Black };
-            GlobalProperties.MainCanvas.Children.Add(angle);
-            Canvas.SetLeft(angle, position.X);
-            Canvas.SetTop(angle, position.Y);
-            return angle;
-        }
-
         public void SetDragPoint(object sender, MouseEventArgs e)
         {
-            //TODO : REFLECTION CAST WITHOUT TYPE
             var rect = (TrianglesModule)sender;
             if (!GlobalProperties.DrawModeOn)
             {
@@ -196,38 +142,6 @@ namespace TrianglesModule
             }
         }
 
-        private static void ChangePosition(Point offset, TrianglesModule shape, double frameSize, Point mousePosition)
-        {
-            Canvas.SetLeft(shape, offset.X);
-            Canvas.SetTop(shape, offset.Y);
-            Canvas.SetLeft(shape.Selection, offset.X - frameSize / 2);
-            Canvas.SetTop(shape.Selection, offset.Y - frameSize / 2);
-            foreach (var angle in shape.AnglesBorder.Values)
-            {
-                Canvas.SetLeft(angle,
-                    Canvas.GetLeft(angle) + (mousePosition.X - shape.dragPoint.X));
-                Canvas.SetTop(angle,
-                    Canvas.GetTop(angle) + (mousePosition.Y - shape.dragPoint.Y));
-            }
-            shape.startPoint = new Point(offset.X, offset.Y);
-            shape.dragPoint = new Point(mousePosition.X,
-                mousePosition.Y);
-        }
-
-        //TODO : ADD NEW SHAPE TO LIST
-        public void StopMovingShape(object sender, MouseEventArgs e)
-        {
-            if (!GlobalProperties.DrawModeOn)
-            {
-                var secondaryCanvas = (Canvas)sender;
-                GlobalProperties.selectedShape.Opacity = 1;
-                GlobalProperties.selectedShape.finishPoint = new Point(GlobalProperties.selectedShape.startPoint.X +
-                        GlobalProperties.selectedShape.Width, GlobalProperties.selectedShape.startPoint.Y + GlobalProperties.selectedShape.Height);
-                GlobalProperties.MainCanvas.Children.Remove(secondaryCanvas);
-            }
-        }
-
-
         public void SetAnglesAction(Shapes rect)
         {
             foreach (var angle in rect.AnglesBorder.Values)
@@ -258,7 +172,7 @@ namespace TrianglesModule
             Canvas.SetTop(secondaryCanvas, 0);
         }
 
-        public void ResizeAngles(object sender, MouseEventArgs e)
+        private void ResizeAngles(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
@@ -331,33 +245,16 @@ namespace TrianglesModule
                 currentMousePosition.Y - GlobalProperties.selectedAnglePoint.Y);
             return offset;
         }
-
-        public void StopResizeShape(object sender, MouseEventArgs e)
-        {
-            var secondaryCanvas = (Canvas)sender;
-            GlobalProperties.selectedShape.Opacity = 1;
-            GlobalProperties.selectedShape.finishPoint = new Point(GlobalProperties.selectedShape.startPoint.X +
-                    GlobalProperties.selectedShape.Width, GlobalProperties.selectedShape.startPoint.Y + GlobalProperties.selectedShape.Height);
-            GlobalProperties.MainCanvas.Children.Remove(secondaryCanvas);
-        }
-
-        public void ShowProperties(object sender, MouseEventArgs e)
-        {
-            var rect = (TrianglesModule)sender;
-            GlobalProperties.PropertiesPanel.Visibility = Visibility.Visible;
-            GlobalProperties.FillSelected.SelectedColor = rect.ColorFill;
-            GlobalProperties.BorderSelected.SelectedColor = rect.ColorStroke;
-        }
     }
 
-    class TriangleModuleCreator : ICreator
+    internal class TriangleModuleCreator : ICreator
     {
-        public Shapes Create(string Name,
-            Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder)
+        public Shapes Create(string name,
+            Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double thicknessBorder)
         {
             var start = new Point(Math.Min(startPoint.X, finishPoint.X), Math.Min(startPoint.Y, finishPoint.Y));
             var finish = new Point(Math.Max(startPoint.X, finishPoint.X), Math.Max(startPoint.Y, finishPoint.Y));
-            return new TrianglesModule(Name, start, finish, colorFill, colorStroke, ThicknessBorder);
+            return new TrianglesModule(name, start, finish, colorFill, colorStroke, thicknessBorder);
         }
 
         public override string ToString()

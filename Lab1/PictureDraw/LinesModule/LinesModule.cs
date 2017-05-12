@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,7 +14,7 @@ namespace LinesModule
     {
         public LinesModule() { }
 
-        public override void SetEvents()
+        public sealed override void SetEvents()
         {
             if (CommonMethods.CheckType(this, typeof(ISelectable)))
             {
@@ -39,8 +37,8 @@ namespace LinesModule
                 new Point(0, 0), new Point(finishPoint.X - startPoint.X, finishPoint.Y - startPoint.Y));
         }
 
-        public LinesModule(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
-                name, colorFill, colorStroke, ThicknessBorder)
+        public LinesModule(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double thicknessBorder) : base(
+                name, colorFill, colorStroke, thicknessBorder)
         {
             this.startPoint = startPoint;
             this.finishPoint = finishPoint;
@@ -49,25 +47,18 @@ namespace LinesModule
             SetEvents();
         }
 
-        public override void Draw()
-        {
-            Canvas.SetLeft(this, startPoint.X);
-            Canvas.SetTop(this, startPoint.Y);
-            GlobalProperties.MainCanvas.Children.Add(this);
-        }
-
         public void SelectShape(object sender, MouseEventArgs e)
         {
             if (!GlobalProperties.DrawModeOn)
             {
-                var rect = (LinesModule)sender;
+                var rect = (Shapes)sender;
                 if (GlobalProperties.selectedShape != null)
                 {
                     CommonMethods.RemoveSelection(GlobalProperties.selectedShape);
                 }
                 GlobalProperties.selectedShape = rect;
                 GlobalProperties.drawShape = rect;
-                rect.AnglesBorder = GetFocusAngles(rect, GlobalProperties.frameSize);
+                rect.AnglesBorder = GetFocusAngles(rect);
                 if (CommonMethods.CheckType(rect, typeof(IResizable)))
                 {
                     SetAnglesAction(rect);
@@ -75,7 +66,7 @@ namespace LinesModule
             }
         }
 
-        public Dictionary<string, Rectangle> GetFocusAngles(Shapes shape, double frameSize)
+        private Dictionary<string, Rectangle> GetFocusAngles(Shapes shape)
         {
             const double SIZE_ANGLES = 6;
             var firstPoint = new Point(shape.startPoint.X, shape.startPoint.Y);
@@ -88,15 +79,6 @@ namespace LinesModule
                 {"second", secondAngle }
             };
             return result;
-        }
-
-        private Rectangle GetAngle(Point position, double size)
-        {
-            var angle = new Rectangle { Width = size, Height = size, Fill = Brushes.Black };
-            GlobalProperties.MainCanvas.Children.Add(angle);
-            Canvas.SetLeft(angle, position.X);
-            Canvas.SetTop(angle, position.Y);
-            return angle;
         }
 
         public void SetDragPoint(object sender, MouseEventArgs e)
@@ -159,20 +141,9 @@ namespace LinesModule
                 mousePosition.Y);
         }
 
-        //TODO : ADD NEW SHAPE TO LIST
-        public void StopMovingShape(object sender, MouseEventArgs e)
+        public void SetAnglesAction(Shapes circle)
         {
-            if (!GlobalProperties.DrawModeOn)
-            {
-                var secondaryCanvas = (Canvas)sender;
-                GlobalProperties.selectedShape.Opacity = 1;
-                GlobalProperties.MainCanvas.Children.Remove(secondaryCanvas);
-            }
-        }
-
-        public void SetAnglesAction(Shapes rect)
-        {
-            foreach (var angle in rect.AnglesBorder.Values)
+            foreach (var angle in circle.AnglesBorder.Values)
             {
                 angle.MouseDown += SetResizeAngle;
             }
@@ -200,11 +171,10 @@ namespace LinesModule
             Canvas.SetTop(secondaryCanvas, 0);
         }
 
-        public void ResizeAngles(object sender, MouseEventArgs e)
+        private void ResizeAngles(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-
                 var angleName =
                     GlobalProperties.selectedShape.AnglesBorder.Keys.First(
                         k => Equals(GlobalProperties.selectedShape.AnglesBorder[k], GlobalProperties.selectedAngle));
@@ -239,7 +209,7 @@ namespace LinesModule
 
         private void SetNewShapeProperties(Shapes shape)
         {
-            shape.AnglesBorder = GetFocusAngles(shape, GlobalProperties.frameSize);
+            shape.AnglesBorder = GetFocusAngles(shape);
             SetAnglesAction(shape);
             shape.dragPoint = new Point(double.NaN, double.NaN);
             GlobalProperties.ShapesList.AllShapes.Remove(GlobalProperties.selectedShape);
@@ -247,27 +217,19 @@ namespace LinesModule
             GlobalProperties.ShapesList.AllShapes.Add(shape);
         }
 
-        public void StopResizeShape(object sender, MouseEventArgs e)
+        public new void StopResizeShape(object sender, MouseEventArgs e)
         {
             var secondaryCanvas = (Canvas)sender;
             GlobalProperties.MainCanvas.Children.Remove(secondaryCanvas);
         }
-
-        public void ShowProperties(object sender, MouseEventArgs e)
-        {
-            var rect = (LinesModule)sender;
-            GlobalProperties.PropertiesPanel.Visibility = Visibility.Visible;
-            GlobalProperties.FillSelected.SelectedColor = rect.ColorFill;
-            GlobalProperties.BorderSelected.SelectedColor = rect.ColorStroke;
-        }
     }
 
-    class LineModuleCreator : ICreator
+    internal class LineModuleCreator : ICreator
     {
-        public Shapes Create(string Name,
-            Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder)
+        public Shapes Create(string name,
+            Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double thicknessBorder)
         {
-            return new LinesModule(Name, startPoint, finishPoint, colorFill, colorStroke, ThicknessBorder);
+            return new LinesModule(name, startPoint, finishPoint, colorFill, colorStroke, thicknessBorder);
         }
 
         public override string ToString()

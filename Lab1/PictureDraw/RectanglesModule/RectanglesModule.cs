@@ -1,33 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PictureDraw;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Shapes;
-//using System.Windows.Shapes;
-//using YAXLib;
+
 
 namespace RectanglesModule
 {
-    class RectanglesModule : Shapes, ISelectable, IMovable, IResizable, IEditable
+    internal class RectanglesModule : Shapes, ISelectable, IMovable, IResizable, IEditable
     {
         public RectanglesModule() { }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
-            //TODO : THICKNESS
             drawingContext.DrawRectangle(new SolidColorBrush(ColorFill),
                 new Pen(new SolidColorBrush(ColorStroke), ThicknessBorder),
                 new Rect(0, 0, Width, Height));
         }
 
-        public override void SetEvents()
+        public sealed override void SetEvents()
         {
             if (CommonMethods.CheckType(this, typeof(ISelectable)))
             {
@@ -43,21 +39,14 @@ namespace RectanglesModule
             }
         }
 
-        public RectanglesModule(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder) : base(
-                name, colorFill, colorStroke, ThicknessBorder)
+        public RectanglesModule(string name, Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double thicknessBorder) : base(
+                name, colorFill, colorStroke, thicknessBorder)
         {
             this.startPoint = startPoint;
             this.finishPoint = finishPoint;
             Width = this.finishPoint.X - this.startPoint.X;
             Height = this.finishPoint.Y - this.startPoint.Y;
             SetEvents();
-        }
-
-        public override void Draw()
-        {
-            Canvas.SetLeft(this, startPoint.X);
-            Canvas.SetTop(this, startPoint.Y);
-            GlobalProperties.MainCanvas.Children.Add(this);
         }
 
         public void SelectShape(object sender, MouseEventArgs e)
@@ -78,50 +67,6 @@ namespace RectanglesModule
                     SetAnglesAction(rect);
                 }
             }
-        }
-        
-        private Rectangle GetFocusFrame(Shapes rect, double frameSize)
-        {
-            Rectangle focus = new Rectangle();
-            focus.Stroke = new SolidColorBrush(Colors.SlateBlue);
-            focus.StrokeDashArray = new DoubleCollection(new List<double> { 5, 1 });
-            focus.StrokeThickness = 2.0;
-            focus.Width = rect.Width + frameSize;
-            focus.Height = rect.Height + frameSize;
-            GlobalProperties.MainCanvas.Children.Add(focus);
-            Canvas.SetLeft(focus, rect.startPoint.X - frameSize / 2);
-            Canvas.SetTop(focus, rect.startPoint.Y - frameSize / 2);
-            return focus;
-        }
-        
-        public Dictionary<string, Rectangle> GetFocusAngles(Shapes shape, double frameSize)
-        {
-            const double SIZE_ANGLES = 6;
-            var leftTopPoint = new Point(shape.startPoint.X - (frameSize + SIZE_ANGLES) / 2, shape.startPoint.Y - (frameSize + SIZE_ANGLES) / 2);
-            var rightBottomPoint = new Point(shape.startPoint.X + shape.Width + SIZE_ANGLES / 2, shape.startPoint.Y + shape.Height + SIZE_ANGLES / 2);
-            var rightTopPoint = new Point(rightBottomPoint.X, leftTopPoint.Y);
-            var leftBottomPoint = new Point(leftTopPoint.X, rightBottomPoint.Y);
-            var leftTopAngle = GetAngle(leftTopPoint, SIZE_ANGLES);
-            var rightTopAngle = GetAngle(rightTopPoint, SIZE_ANGLES);
-            var rightBottomAngle = GetAngle(rightBottomPoint, SIZE_ANGLES);
-            var leftBottomAngle = GetAngle(leftBottomPoint, SIZE_ANGLES);
-            var result = new Dictionary<string, Rectangle>
-            {
-                {"leftTop", leftTopAngle },
-                {"rightTop", rightTopAngle },
-                {"rightBottom", rightBottomAngle },
-                {"leftBottom", leftBottomAngle }
-            };
-            return result;
-        }
-        
-        private Rectangle GetAngle(Point position, double size)
-        {
-            var angle = new Rectangle { Width = size, Height = size, Fill = Brushes.Black };
-            GlobalProperties.MainCanvas.Children.Add(angle);
-            Canvas.SetLeft(angle, position.X);
-            Canvas.SetTop(angle, position.Y);
-            return angle;
         }
         
         public void SetDragPoint(object sender, MouseEventArgs e)
@@ -164,38 +109,7 @@ namespace RectanglesModule
                     }
                 }
             }
-        }
-        
-        private static void ChangePosition(Point offset, RectanglesModule shape, double frameSize, Point mousePosition)
-        {
-            Canvas.SetLeft(shape, offset.X);
-            Canvas.SetTop(shape, offset.Y);
-            Canvas.SetLeft(shape.Selection, offset.X - frameSize / 2);
-            Canvas.SetTop(shape.Selection, offset.Y - frameSize / 2);
-            foreach (var angle in shape.AnglesBorder.Values)
-            {
-                Canvas.SetLeft(angle,
-                    Canvas.GetLeft(angle) + (mousePosition.X - shape.dragPoint.X));
-                Canvas.SetTop(angle,
-                    Canvas.GetTop(angle) + (mousePosition.Y - shape.dragPoint.Y));
-            }
-            shape.startPoint = new Point(offset.X, offset.Y);
-            shape.dragPoint = new Point(mousePosition.X,
-                mousePosition.Y);
-        }
-        
-        //TODO : ADD NEW SHAPE TO LIST
-        public void StopMovingShape(object sender, MouseEventArgs e)
-        {
-            if (!GlobalProperties.DrawModeOn)
-            {
-                var secondaryCanvas = (Canvas)sender;
-                GlobalProperties.selectedShape.Opacity = 1;
-                GlobalProperties.selectedShape.finishPoint = new Point(GlobalProperties.selectedShape.startPoint.X +
-                        GlobalProperties.selectedShape.Width, GlobalProperties.selectedShape.startPoint.Y + GlobalProperties.selectedShape.Height);
-                GlobalProperties.MainCanvas.Children.Remove(secondaryCanvas);
-            }
-        }
+        }       
                 
         public void SetAnglesAction(Shapes rect)
         {
@@ -225,8 +139,8 @@ namespace RectanglesModule
             Panel.SetZIndex(secondaryCanvas, 99);
             Canvas.SetTop(secondaryCanvas, 0);
         }
-               
-        public void ResizeAngles(object sender, MouseEventArgs e)
+
+        private void ResizeAngles(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
@@ -297,32 +211,16 @@ namespace RectanglesModule
                 currentMousePosition.Y - GlobalProperties.selectedAnglePoint.Y);
             return offset;
         }
-        
-        public void StopResizeShape(object sender, MouseEventArgs e)
-        {
-            var secondaryCanvas = (Canvas)sender;
-            GlobalProperties.MainCanvas.Children.Remove(secondaryCanvas);
-            GlobalProperties.selectedShape.finishPoint = new Point(GlobalProperties.selectedShape.startPoint.X + GlobalProperties.selectedShape.Width,
-                GlobalProperties.selectedShape.startPoint.Y + GlobalProperties.selectedShape.Height);
-        }
-        
-        public void ShowProperties(object sender, MouseEventArgs e)
-        {
-            var rect = (RectanglesModule)sender;
-            GlobalProperties.PropertiesPanel.Visibility = Visibility.Visible;
-            GlobalProperties.FillSelected.SelectedColor = rect.ColorFill;
-            GlobalProperties.BorderSelected.SelectedColor = rect.ColorStroke;
-        }
     }
 
-    class RectanglesModuleCreator : ICreator
+    internal class RectanglesModuleCreator : ICreator
     {
-        public Shapes Create(string Name,
-            Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double ThicknessBorder)
+        public Shapes Create(string name,
+            Point startPoint, Point finishPoint, Color colorFill, Color colorStroke, double thicknessBorder)
         {
             var start = new Point(Math.Min(startPoint.X, finishPoint.X), Math.Min(startPoint.Y, finishPoint.Y));
             var finish = new Point(Math.Max(startPoint.X, finishPoint.X), Math.Max(startPoint.Y, finishPoint.Y));
-            return new RectanglesModule(Name, start, finish, colorFill, colorStroke, ThicknessBorder);
+            return new RectanglesModule(name, start, finish, colorFill, colorStroke, thicknessBorder);
         }
 
         public override string ToString()
