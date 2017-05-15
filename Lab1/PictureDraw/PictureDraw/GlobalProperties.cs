@@ -37,7 +37,7 @@ namespace PictureDraw
         public static DockPanel PropertiesPanel { get; set; }
         public static ColorPicker FillSelected { get; set; }
         public static ColorPicker BorderSelected { get; set; } 
-        public static Grid MainGrid { get; set; }       
+        public static Grid MainGrid { get; set; }
     }
 
 }

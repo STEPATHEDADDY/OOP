@@ -23,33 +23,27 @@ namespace DigitalSignature
     /// </summary>
     public partial class MainWindow : Window
     {
-        private RSACrypt instance;
-        public RSAParameters privateKey;
-        public RSAParameters publicKey;
-        public byte[] bytesPublic;
+        public Keys keys { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
+            keys = new Keys();
         }
 
         private void buttonOpen_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
-            {
-                RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
-                privateKey = RSAalg.ExportParameters(true);
-                publicKey = RSAalg.ExportParameters(false);
-                bytesPublic = RSAalg.ExportCspBlob(false);
-                instance = new RSACrypt(openFileDialog.FileName, File.ReadAllBytes(openFileDialog.FileName));                
-                textBoxPath.Text = instance.filePath;                          
+            {                                         
+                RSACrypt.getParams(openFileDialog.FileName);                
+                textBoxPath.Text = RSACrypt.filePath;                          
             }
         }
 
         private void buttonPatch_Click(object sender, RoutedEventArgs e)
         {
-            if (instance.HashAndSignBytes(privateKey, publicKey, bytesPublic))
+            if (RSACrypt.HashAndSignBytes(keys.privateKey))
             {
                 MessageBox.Show("Signed!");
             }
@@ -65,7 +59,7 @@ namespace DigitalSignature
             if (openFileDialog.ShowDialog() == true)
             {
                 var file = File.ReadAllBytes(openFileDialog.FileName);
-                if (RSACrypt.VerifySignedHash(file))
+                if (RSACrypt.VerifySignedHash(file, keys.publicKey))
                 {
                     MessageBox.Show("GOOD");
                 }

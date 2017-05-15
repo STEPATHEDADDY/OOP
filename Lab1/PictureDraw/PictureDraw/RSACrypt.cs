@@ -5,27 +5,23 @@ namespace DigitalSignature
 {
     class RSACrypt
     {
-        public static bool VerifySignedHash(byte[] unsignedFile)
+        public static bool VerifySignedHash(byte[] unsignedFile, string publicKey)
         {
             try
             {
-                RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
-
-                var bytesPublicSize = 148;
                 var signatureSize = 128;
 
-                byte[] publicKey = new byte[bytesPublicSize];
+                RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
+                
                 byte[] signature = new byte[signatureSize];
-                byte[] file = new byte[unsignedFile.Length - (bytesPublicSize + signatureSize)];
+                byte[] file = new byte[unsignedFile.Length - signatureSize];
 
-                Buffer.BlockCopy(unsignedFile, 0, file, 0, unsignedFile.Length - (bytesPublicSize + signatureSize));
-                Buffer.BlockCopy(unsignedFile, unsignedFile.Length - (bytesPublicSize + signatureSize), signature, 0, signatureSize);
-                Buffer.BlockCopy(unsignedFile, unsignedFile.Length - bytesPublicSize, publicKey, 0, bytesPublicSize);
+                Buffer.BlockCopy(unsignedFile, 0, file, 0, unsignedFile.Length - signatureSize);
+                Buffer.BlockCopy(unsignedFile, unsignedFile.Length - signatureSize, signature, 0, signatureSize);
 
-                RSAalg.ImportCspBlob(publicKey);
+                RSAalg.FromXmlString(publicKey);
 
                 return RSAalg.VerifyData(file, new SHA1CryptoServiceProvider(), signature);
-
             }
             catch (CryptographicException e)
             {

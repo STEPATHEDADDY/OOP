@@ -101,7 +101,7 @@ namespace PictureDraw
             {
                 try
                 {
-                    if (RSACrypt.VerifySignedHash(File.ReadAllBytes(file.FullName)))
+                    if (RSACrypt.VerifySignedHash(File.ReadAllBytes(file.FullName), File.ReadAllText(@"G:\public.xml")))
                     {
                         modules.Add(Assembly.LoadFrom(file.FullName));
                     }

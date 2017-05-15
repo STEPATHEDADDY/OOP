@@ -6,43 +6,36 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace DigitalSignature
 {
-    class RSACrypt
+    public class RSACrypt
     {
-        public string filePath { get; set; }
-        public string newPath { get; set; }
-        public byte[] file { get; set; }
-        private byte[] signedCopy { get; set; }
-        private static int  bytesPublicSize = 148;
+        public static string filePath { get; set; }
+        public static string newPath { get; set; }
+        public static byte[] file { get; set; }
+        private static byte[] signedCopy { get; set; }
         private static int signatureSize = 128;
 
-        public RSACrypt(string filePath, byte[] file)
+        public static void getParams(string mainPath)
         {
-            this.filePath = filePath;
-            this.file = file;
-            newPath = getNewPath(filePath);
+            filePath = mainPath;
+            file = File.ReadAllBytes(filePath);
+            newPath = filePath.Replace(".dll", string.Empty);
+            newPath += "_signed.dll";            
         }
-
-        private string getNewPath(string filePath)
-        {
-            var result = filePath.Replace(".dll", string.Empty);
-            result += "_signed.dll";
-            return result;
-        }
-
-        public bool HashAndSignBytes(RSAParameters exportKey, RSAParameters publicKey, byte[] bytesPublic)
+        
+        public static bool HashAndSignBytes(string exportKey)
         {
             try
             {
                 RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
-                RSAalg.ImportParameters(exportKey);                        
+                RSAalg.FromXmlString(exportKey);                
                 signedCopy = RSAalg.SignData(file, new SHA1CryptoServiceProvider());
-                byte[] resultFile = new byte[file.Length + signatureSize + bytesPublicSize];
+                byte[] resultFile = new byte[file.Length + signatureSize];
                 Buffer.BlockCopy(file, 0, resultFile, 0, file.Length);
                 Buffer.BlockCopy(signedCopy, 0, resultFile, file.Length, signatureSize);
-                Buffer.BlockCopy(bytesPublic, 0, resultFile, file.Length + signatureSize, bytesPublicSize);                
                 File.WriteAllBytes(newPath, resultFile);
                 return true;
             }
@@ -53,27 +46,21 @@ namespace DigitalSignature
             }
         }
 
-        public static bool VerifySignedHash(byte[] unsignedFile)
+        public static bool VerifySignedHash(byte[] unsignedFile, string publicKey)
         {
             try
             {
                 RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
 
-                bytesPublicSize = 148;
-                signatureSize = 128;
-
-                byte[] publicKey = new byte[bytesPublicSize];
                 byte[] signature = new byte[signatureSize];
-                byte[] file = new byte[unsignedFile.Length - (bytesPublicSize + signatureSize)];
+                byte[] file = new byte[unsignedFile.Length - signatureSize];
 
-                Buffer.BlockCopy(unsignedFile, 0, file, 0, unsignedFile.Length - (bytesPublicSize + signatureSize));
-                Buffer.BlockCopy(unsignedFile, unsignedFile.Length - (bytesPublicSize + signatureSize), signature, 0, signatureSize);
-                Buffer.BlockCopy(unsignedFile, unsignedFile.Length - bytesPublicSize, publicKey, 0, bytesPublicSize);
+                Buffer.BlockCopy(unsignedFile, 0, file, 0, unsignedFile.Length - signatureSize);
+                Buffer.BlockCopy(unsignedFile, unsignedFile.Length - signatureSize, signature, 0, signatureSize);
 
-                RSAalg.ImportCspBlob(publicKey);
+                RSAalg.FromXmlString(publicKey);
 
                 return RSAalg.VerifyData(file, new SHA1CryptoServiceProvider(), signature);
-
             }
             catch (CryptographicException e)
             {

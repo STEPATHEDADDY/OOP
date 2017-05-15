@@ -41,12 +41,26 @@ namespace PictureDraw
             GlobalProperties.PropertiesPanel.Visibility = Visibility.Hidden;
             GlobalProperties.FillSelected = ClrPckerFillSelected;
             GlobalProperties.BorderSelected = ClrPckerBorderSelected;
-            GlobalProperties.MinShapeSize = 30;
+            GlobalProperties.MinShapeSize = 30;            
             Panel.SetZIndex(GlobalProperties.MainCanvas, -1);                
             CommonMethods.getCreatorsShapes();              
             CommonMethods.getCreatorsNames(this);
             ClrPckerFill.SelectedColor = Color.FromArgb(255, 100, 100, 100);
             ClrPckerBorder.SelectedColor = Color.FromArgb(255, 255, 100, 100);
+            SetInitDraw();
+        }
+
+        private void SetInitDraw()
+        {
+            if (CommonMethods.creatorsShapes.Keys.Count == 0)
+            {
+                buttonDraw.Visibility = Visibility.Hidden;                
+            }
+            else
+            {
+                var listShapes = CommonMethods.creatorsNames.Keys.ToList();
+                GlobalProperties.currentShape = CommonMethods.creatorsNames[listShapes[0]];
+            }
         }
 
         public void buttonShape_Click(object sender, RoutedEventArgs e)
